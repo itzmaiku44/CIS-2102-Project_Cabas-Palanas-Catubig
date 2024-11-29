@@ -4,11 +4,15 @@ const expense = require("../controllers/expenseController");
 const validateToken = require("../middlewares/auth");
 const {expenseValidation, validate} = require("../middlewares/validation");
 
-//add expenseValidation before going to create an expense
+//create expense
 router.post("/", validateToken, expenseValidation, validate, expense.createExpenseController);
-router.get("/", validateToken,expenseValidation, validate, expense.getExpenseController);
-router.get("/:id", validateToken, expenseValidation, validate, expense.getExpenseByIdController);
+//display all expenses
+router.get("/", validateToken, expense.getExpenseController);
+//display specific expenses
+router.get("/:id", validateToken, expense.getExpenseByIdController);
+//update expenses
 router.put("/:id", validateToken, expenseValidation, validate, expense.updateExpenseController);
-router.delete("/:id", validateToken, expenseValidation, validate, expense.deleteExpenseController);
+//delete expenses
+router.delete("/:id", validateToken, expense.deleteExpenseController);
 
 module.exports = router;

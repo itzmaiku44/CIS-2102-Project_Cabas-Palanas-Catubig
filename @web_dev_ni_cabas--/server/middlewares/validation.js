@@ -13,6 +13,11 @@ const expenseValidation = [
     body("categoryId").notEmpty().withMessage("Category is required").isInt({gt: 0})
 ]
 
+const budgetValidation = [
+    body("budget_name").notEmpty().withMessage("Budget name is required").isLength({ max: 100 }).withMessage("Budget name must not exceed 100 characters"),
+    body("amount").notEmpty().withMessage("Amount is required").isFloat({ gt: 0 }).withMessage("Amount must be a positive number"),
+  ];
+
 
 const validate = (req, res, next) => {
     const errors = validationResult(req);
@@ -34,5 +39,6 @@ const validate = (req, res, next) => {
 module.exports = {
     registerValidation,
     expenseValidation,
+    budgetValidation,
     validate,
 };

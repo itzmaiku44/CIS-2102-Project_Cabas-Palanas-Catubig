@@ -8,12 +8,12 @@ const createExpense = async (expenseData) => {
     const newExpense = await prisma.expenses.create({
       data: {
         amount: expenseData.amount,
-        expense_name: expenseData.expense_name, 
-        categoryId: expenseData.categoryId,
+        expense_name: expenseData.expense_name,
+        category: {
+          connect: { id: expenseData.categoryId }, 
+        },
         user: {
-          connect: {
-            id: expenseData.userId,
-          },
+          connect: { id: expenseData.userId }, 
         },
       },
     });
