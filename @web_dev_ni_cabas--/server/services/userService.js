@@ -43,7 +43,7 @@ const login = async (email, password) => {
   const isPasswordValid = await bcrypt.compare(password, user.password);
   if (!isPasswordValid) return null; 
 
-  const token = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET, {
+  const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
     expiresIn: "7d", 
   });
 

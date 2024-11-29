@@ -6,7 +6,7 @@ const routes = require("./routes");
 
 app.use(express.json());
 
-app.use("/transaction", routes.notesRoutes);
+app.use("/expenses", routes.expenseRoutes);
 app.use("/users", routes.userRoutes);
 
 app.listen(port, () => {

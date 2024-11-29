@@ -27,11 +27,17 @@ const loginController = async (req, res) => {
       return res.status(400).json({ message: "Email and password are required" });
     }
 
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if(!emailRegex.test(email)){
+      return res.status(400).json({message: "Invalid email format"});
+    }
+  
+
     // Attempt to log in
     const token = await userService.login(email, password);
 
     if (!token) {
-      return res.status(401).json({ message: "Invalid email or password" });
+      return res.status(401).json({ message: "Wrong email or password" });
     }
 
     res.json({ token }); 

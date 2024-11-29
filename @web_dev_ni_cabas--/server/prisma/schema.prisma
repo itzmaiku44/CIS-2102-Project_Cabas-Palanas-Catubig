@@ -17,15 +17,15 @@ model User {
   birthdate DateTime
   createdAt DateTime  @default(now())
   password  String
-  transactions Transaction[]
+  transactions Expenses[]
   budgets    Budget[]
 }
-
-model Transaction {
+   
+model Expenses {
   id          Int      @id @default(autoincrement())
   userId      Int
   amount      Float
-  description String
+  expense_name String
   categoryId  Int
   createdAt   DateTime @default(now())
   user        User     @relation(fields: [userId], references: [id])
@@ -35,9 +35,9 @@ model Transaction {
 model Budget {
   id        Int      @id @default(autoincrement())
   userId    Int
-  category  String
+  budget_name  String
   amount    Float
   createdAt DateTime @default(now())
   user      User     @relation(fields: [userId], references: [id])
-  transactions Transaction[]
+  expenses Expenses[]
 }
