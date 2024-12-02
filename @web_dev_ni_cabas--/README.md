@@ -1,9 +1,10 @@
 # INSTALLATION
 
-Commands in terminal:
+
 ### Tailwind CSS 
-> `npm install -D tailwindcss postcss autoprefixer`
-inside the taildwind.config.js, add this line: > `content: ['./index.html', './src/**/*.{js,jsx,ts,tsx}'],`
+Commands in terminal
+ ```npm install -D tailwindcss postcss autoprefixer```
+inside the taildwind.config.js, add this line:  ```content: ['./index.html', './src/**/*.{js,jsx,ts,tsx}'],```
 inside *.css files add this lines:
 ```
 @tailwind base;
