@@ -11,6 +11,15 @@
 @tailwind components;
 @tailwind utilities;
 ```
+- Create a new file in parent folder named "postcss.config.cjs" and add this code:
+```
+module.exports = {
+  plugins: {
+    tailwindcss: {},
+    autoprefixer: {},
+  },
+};
+```
 
 
 - [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
