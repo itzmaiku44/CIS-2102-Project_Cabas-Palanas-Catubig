@@ -10,6 +10,7 @@ Install necessary packages:
 npm install express
 npm install bcrypt
 npm install express-validator
+
 Step 2: Set Up Prisma
 Install Prisma as a development dependency:
 
