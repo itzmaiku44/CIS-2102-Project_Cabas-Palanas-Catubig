@@ -1,37 +1,89 @@
 import React from 'react'
 
 const sidebar = () => {
-    const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [isNotificationEnabled, setIsNotificationEnabled] = useState(true);
-    const [isDarkTheme, setIsDarkTheme] = useState(false);
-    const [currency, setCurrency] = useState("USD");
-    const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
-    const [profileImage, setProfileImage] = useState(null);
-    const [user, setUser] = useState({
-        name: 'John Doe',
-        email: 'john.doe@example.com',
-        birthdate: '1990-01-01',
-    });
+  const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
+  const [carouselIndex, setCarouselIndex] = useState(0);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isNotificationEnabled, setIsNotificationEnabled] = useState(true);
+  const [isDarkTheme, setIsDarkTheme] = useState(false);
+  const [currency, setCurrency] = useState("USD");
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+  const [isEditProfileModalOpen, setIsEditProfileModalOpen] = useState(false);
+  const [profileImage, setProfileImage] = useState(null);
+  /* const [user, setUser] = useState({
+    name: 'John Doe',
+    email: 'john.doe@example.com',
+    birthdate: '1990-01-01',
+  }); */
+  const [profileData, setProfileData] = useState({
+    name: 'John Doe',
+    email: 'john.doe@example.com',
+    birthdate: '1990-01-01',
+    image: null, // Default: no image
+    password: '1234',
+  });
 
 
-    const toggleSidebar = () => {
-        setIsSidebarExpanded(!isSidebarExpanded);
-    };
+  const toggleEditProfileModal = () => setIsEditProfileModalOpen(!isEditProfileModalOpen);
+  const toggleProfileModal = () => setIsProfileModalOpen(!isProfileModalOpen);
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setProfileData((prev) => ({
+          ...prev,
+          image: reader.result, // Save image as a base64 string
+        }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
-    const toggleModal = () => {
-        setIsModalOpen(!isModalOpen);
-    };
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setProfileData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
 
-    const toggleProfileModal = () => setIsProfileModalOpen(!isProfileModalOpen);
-    const handleImageUpload = (event) => {
-    const file = event.target.files[0];
-        if (file) {
-        const reader = new FileReader();
-            reader.onloadend = () => setProfileImage(reader.result);
-            reader.readAsDataURL(file);
-        }
-    };
+
+
+  const toggleSidebar = () => {
+    setIsSidebarExpanded(!isSidebarExpanded);
+  };
+
+  const toggleModal = () => {
+    setIsModalOpen(!isModalOpen);
+  };
+
+  const handlePrevious = () => {
+    setCarouselIndex((prev) =>
+      prev === 0 ? Math.ceil(budgets.length / 2) - 1 : prev - 1
+    );
+  };
+
+  const handleNext = () => {
+    setCarouselIndex((prev) =>
+      prev === Math.ceil(budgets.length / 2) - 1 ? 0 : prev + 1
+    );
+  };
+
+  const budgets = [
+    { category: "Food", spent: 50, remaining: 50 },
+    { category: "Travel", spent: 70, remaining: 30 },
+    { category: "Shopping", spent: 40, remaining: 60 },
+    { category: "Entertainment", spent: 80, remaining: 20 },
+    { category: "Health", spent: 60, remaining: 40 },
+  ];
+
+  const handleSave = () => {
+    alert(`Settings saved!\nTheme: ${isDarkTheme ? "Dark" : "Light"}\nNotifications: ${
+      isNotificationEnabled ? "On" : "Off"
+    }\nCurrency: ${currency}`);
+    toggleModal();
+  };
 
 
   return (
@@ -171,49 +223,134 @@ const sidebar = () => {
         )}
 
 
-      {/* Profile Modal */}
-      {isProfileModalOpen && (
+        {isProfileModalOpen && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+            <div className="bg-[#f8ebe2] rounded-lg p-2 w-[600px] h-[350px] relative flex justify-evenly">
+              {/* Close Button */}
+              <button
+                onClick={toggleProfileModal}
+                className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-2 text-lg"
+              >
+                <i className="fas fa-times"></i>
+              </button>
+
+              <div className="flex w-4/5">
+                <div className="flex flex-col flex-grow pr-4 justify-center">
+                  <h2 className="text-2xl font-bold text-blue-600 mb-4">{profileData.name}</h2>
+                  <p className="text-lg mb-2 text-blue-600">Email: {profileData.email}</p>
+                  <p className="text-lg mb-4 text-blue-600">Birthdate: {profileData.birthdate}</p>
+                  <button
+                    className="mt-4 p-2 bg-yellow-500 text-white rounded-md flex items-center w-fit"
+                    onClick={toggleEditProfileModal}
+                  >
+                    <i className="fas fa-clipboard mr-2"></i> Edit Profile
+                  </button>
+                </div>
+
+                {/* Profile Picture (Right) */}
+                <div className="w-[220px] h-[200px] mt-10 bg-gray-200 rounded-md overflow-hidden flex items-center justify-center border-2 border-gray-300 shadow">
+                  {profileData.image ? (
+                    <img src={profileData.image} alt="Profile" className="w-full h-full object-cover" />
+                  ) : (
+                    <span className="text-gray-500">picture</span>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+
+      {/* Edit Profile Modal */}
+      {isEditProfileModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white rounded-lg p-6 w-1/3 h-80 relative flex">
+          <div className="bg-[#f8ebe2] rounded-lg p-6 w-[600px] relative">
             {/* Close Button */}
             <button
-              onClick={toggleProfileModal}
-              className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-2 text-sm"
+              onClick={toggleEditProfileModal}
+              className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-2 text-lg"
             >
               <i className="fas fa-times"></i>
             </button>
 
-            {/* Modal Content */}
-            <div className="flex w-full">
+            {/* Edit Profile Content */}
+            <h2 className="text-2xl font-bold text-blue-600 mb-6">Edit Profile</h2>
+            <div className="flex">
               {/* User Info */}
-              <div className="flex-grow flex flex-col justify-center pr-6">
-                <h2 className="text-2xl font-bold mb-4">{user.name}</h2>
-                <p className="text-lg mb-2">Email: {user.email}</p>
-                <p className="text-lg">Birthdate: {user.birthdate}</p>
+              <div className="flex-grow pr-4">
+                <div className="mb-4">
+                  <label className="block text-blue-600 mb-2">Name</label>
+                  <input
+                    type="text"
+                    name="name"
+                    placeholder="Enter your Name"
+                    value={profileData.name}
+                    onChange={handleInputChange}
+                    className="w-full border rounded p-2"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-blue-600 mb-2">Email</label>
+                  <input
+                    type="email"
+                    name="email"
+                    placeholder="Enter your email address"
+                    value={profileData.email}
+                    onChange={handleInputChange}
+                    className="w-full border rounded p-2"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-blue-600 mb-2">Birthdate</label>
+                  <input
+                    type="date"
+                    name="birthdate"
+                    value={profileData.birthdate}
+                    onChange={handleInputChange}
+                    className="w-full border rounded p-2"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-blue-600 mb-2">Password</label>
+                  <input
+                    type="password"
+                    name="password"
+                    placeholder="Enter your password"
+                    onChange={handleInputChange}
+                    value={profileData.password}
+                    className="w-full border rounded p-2"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-blue-600 mb-2">Confirm Password</label>
+                  <input
+                    type="password"
+                    name="password"
+                    placeholder="Confirm your password"
+                    className="w-full border rounded p-2"
+                  />
+                </div>
               </div>
 
-              {/* Image Holder */}
-              <div className="flex-none mt-8 w-48 h-40 rounded-3xl overflow-hidden border-2 border-gray-300">
-                <label htmlFor="profileImage" className="cursor-pointer w-full h-full flex justify-center items-center bg-gray-200 hover:bg-gray-300">
-                  {profileImage ? (
-                    <img src={profileImage} alt="Profile" className="w-full h-full object-cover" />
-                  ) : (
-                    <span className="text-gray-400">Upload</span>
-                  )}
-                  <input
-                    id="profileImage"
-                    type="file"
-                    className="hidden"
-                    accept="image/*"
-                    onChange={handleImageUpload}
-                  />
-                </label>
+              {/* Profile Image Upload */}
+              <div className="w-48 h-48 bg-gray-200 rounded-full overflow-hidden flex items-center justify-center border-2 border-gray-300 relative">
+                {profileData.image ? (
+                  <img src={profileData.image} alt="Profile" className="w-full h-full object-cover" />
+                ) : (
+                  <span className="text-gray-500">No Image</span>
+                )}
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="absolute inset-0 opacity-0 cursor-pointer"
+                  onChange={handleImageUpload}
+                />
               </div>
             </div>
-
-            {/* Edit Profile Button */}
-            <button className="absolute bottom-4 left-4 p-2 bg-blue-500 text-white rounded-md flex items-center">
-              <i className="fas fa-clipboard mr-2"></i> Edit Profile
+            <button 
+              onClick={toggleEditProfileModal}
+              className="mt-4 w-full bg-blue-500 text-white rounded p-2">
+              Save
             </button>
           </div>
         </div>
