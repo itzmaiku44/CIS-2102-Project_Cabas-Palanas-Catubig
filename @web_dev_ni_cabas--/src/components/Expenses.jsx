@@ -1,6 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 
-const Expenses = ({ expenses }) => {
+const Expenses = () => {
+  const [expenses] = useState([
+    { id: 1, category: "Groceries", amount: 1000, date: "2024-12-01" },
+    { id: 2, category: "Entertainment", amount: 2000, date: "2024-12-03" },
+  ]);
+
+  
   return (
     <div className="p-4 bg-white shadow rounded-md">
       <h2 className="text-lg font-bold mb-3">All Expenses</h2>
