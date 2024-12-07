@@ -94,120 +94,129 @@ const EditProfileModal = ({ profileData, setProfileData, onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+    <>
+      {/* Modal Overlay */}
       <div 
-        className={`bg-[#f8ebe2] rounded-lg p-6 w-[600px] relative transform transition-all duration-300 ${
-          saveSuccess ? 'scale-95 opacity-0' : 'scale-100 opacity-100'
-        }`}
-      >
-        {/* Close Button */}
-        <button
-          onClick={onClose}
-          className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-2 text-lg"
+        className="fixed inset-0 bg-black bg-opacity-50 z-[60]"
+        onClick={onClose}
+      ></div>
+
+      {/* Modal Content */}
+      <div className="fixed inset-0 flex items-center justify-center z-[60]" onClick={(e) => e.stopPropagation()}>
+        <div 
+          className={`bg-[#f8ebe2] rounded-lg p-6 w-[600px] relative transform transition-all duration-300 ${
+            saveSuccess ? 'scale-95 opacity-0' : 'scale-100 opacity-100'
+          }`}
         >
-          <i className="fas fa-times"></i>
-        </button>
+          {/* Close Button */}
+          <button
+            onClick={onClose}
+            className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-2 text-lg"
+          >
+            <i className="fas fa-times"></i>
+          </button>
 
-        <h2 className="text-2xl font-bold text-blue-600 mb-6">Edit Profile</h2>
-        
-        <div className="flex">
-          {/* Form Fields */}
-          <div className="flex-grow pr-4">
-            <FormField
-              label="Name"
-              name="name"
-              type="text"
-              value={formData.name}
-              onChange={handleInputChange}
-              error={errors.name}
-            />
-            <FormField
-              label="Email"
-              name="email"
-              type="email"
-              value={formData.email}
-              onChange={handleInputChange}
-              error={errors.email}
-            />
-            <FormField
-              label="Birthdate"
-              name="birthdate"
-              type="date"
-              value={formData.birthdate}
-              onChange={handleInputChange}
-              error={errors.birthdate}
-            />
-            <FormField
-              label="Password"
-              name="password"
-              type="password"
-              value={formData.password}
-              onChange={handleInputChange}
-              error={errors.password}
-            />
-            <FormField
-              label="Confirm Password"
-              name="confirmPassword"
-              type="password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              error={errors.confirmPassword}
-            />
-          </div>
-
-          {/* Profile Image Upload with animation */}
-          <div className={`w-48 h-48 bg-gray-200 rounded-full overflow-hidden flex items-center justify-center border-2 border-gray-300 relative transition-all duration-300 ${
-            isSubmitting ? 'opacity-50' : 'opacity-100'
-          }`}>
-            {formData.image ? (
-              <img 
-                src={formData.image} 
-                alt="Profile" 
-                className="w-full h-full object-cover transition-opacity duration-300" 
+          <h2 className="text-2xl font-bold text-blue-600 mb-6">Edit Profile</h2>
+          
+          <div className="flex">
+            {/* Form Fields */}
+            <div className="flex-grow pr-4">
+              <FormField
+                label="Name"
+                name="name"
+                type="text"
+                value={formData.name}
+                onChange={handleInputChange}
+                error={errors.name}
               />
+              <FormField
+                label="Email"
+                name="email"
+                type="email"
+                value={formData.email}
+                onChange={handleInputChange}
+                error={errors.email}
+              />
+              <FormField
+                label="Birthdate"
+                name="birthdate"
+                type="date"
+                value={formData.birthdate}
+                onChange={handleInputChange}
+                error={errors.birthdate}
+              />
+              <FormField
+                label="Password"
+                name="password"
+                type="password"
+                value={formData.password}
+                onChange={handleInputChange}
+                error={errors.password}
+              />
+              <FormField
+                label="Confirm Password"
+                name="confirmPassword"
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                error={errors.confirmPassword}
+              />
+            </div>
+
+            {/* Profile Image Upload */}
+            <div className={`w-48 h-48 bg-gray-200 rounded-full overflow-hidden flex items-center justify-center border-2 border-gray-300 relative transition-all duration-300 ${
+              isSubmitting ? 'opacity-50' : 'opacity-100'
+            }`}>
+              {formData.image ? (
+                <img 
+                  src={formData.image} 
+                  alt="Profile" 
+                  className="w-full h-full object-cover transition-opacity duration-300" 
+                />
+              ) : (
+                <span className="text-gray-500">No Image</span>
+              )}
+              <input
+                type="file"
+                accept="image/*"
+                className="absolute inset-0 opacity-0 cursor-pointer"
+                onChange={handleImageUpload}
+                disabled={isSubmitting}
+              />
+            </div>
+          </div>
+
+          <button 
+            onClick={handleSubmit}
+            disabled={isSubmitting}
+            className={`mt-4 w-full rounded p-2 transition-all duration-300 flex items-center justify-center
+              ${isSubmitting ? 'bg-blue-400' : 'bg-blue-500 hover:bg-blue-600'}
+              ${saveSuccess ? 'bg-green-500' : ''}
+            `}
+          >
+            {isSubmitting ? (
+              <>
+                <LoadingSpinner size="small" light />
+                <span className="ml-2 text-white">Saving...</span>
+              </>
+            ) : saveSuccess ? (
+              <>
+                <i className="fas fa-check mr-2"></i>
+                <span className="text-white">Saved!</span>
+              </>
             ) : (
-              <span className="text-gray-500">No Image</span>
+              <span className="text-white">Save Changes</span>
             )}
-            <input
-              type="file"
-              accept="image/*"
-              className="absolute inset-0 opacity-0 cursor-pointer"
-              onChange={handleImageUpload}
-              disabled={isSubmitting}
-            />
-          </div>
-        </div>
+          </button>
 
-        <button 
-          onClick={handleSubmit}
-          disabled={isSubmitting}
-          className={`mt-4 w-full rounded p-2 transition-all duration-300 flex items-center justify-center
-            ${isSubmitting ? 'bg-blue-400' : 'bg-blue-500 hover:bg-blue-600'}
-            ${saveSuccess ? 'bg-green-500' : ''}
-          `}
-        >
-          {isSubmitting ? (
-            <>
-              <LoadingSpinner size="small" light />
-              <span className="ml-2 text-white">Saving...</span>
-            </>
-          ) : saveSuccess ? (
-            <>
-              <i className="fas fa-check mr-2"></i>
-              <span className="text-white">Saved!</span>
-            </>
-          ) : (
-            <span className="text-white">Save Changes</span>
+          {errors.submit && (
+            <div className="mt-2">
+              <ErrorMessage message={errors.submit} />
+            </div>
           )}
-        </button>
-
-        {errors.submit && (
-          <div className="mt-2">
-            <ErrorMessage message={errors.submit} />
-          </div>
-        )}
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 
