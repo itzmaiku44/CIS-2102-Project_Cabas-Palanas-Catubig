@@ -46,6 +46,8 @@ css file should look like this:
 ### prop-types
 - validate the types of props passed to a component. used for login, register, edit profile, etc.
 - Command in terminal
-```npm install prop-types```
+```
+npm install prop-types
+```
 
 
