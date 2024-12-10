@@ -1,9 +1,7 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React from "react";
 
 const ErrorMessage = ({ message }) => {
   if (!message) return null;
-  
   return (
     <div className="text-red-500 text-sm mt-1">
       <i className="fas fa-exclamation-circle mr-1"></i>
@@ -12,8 +10,4 @@ const ErrorMessage = ({ message }) => {
   );
 };
 
-ErrorMessage.propTypes = {
-  message: PropTypes.string,
-};
-
-export default ErrorMessage; 
+export default ErrorMessage;
