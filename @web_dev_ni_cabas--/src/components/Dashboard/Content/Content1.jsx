@@ -78,7 +78,7 @@ const Content1 = ({ profileData }) => {
                   <td className="p-4">{expense.date}</td>
                   <td className="p-4">
                     <span className={`px-3 py-1 rounded-full ${
-                      index % 2 === 1 ? 'bg-brown-500' : 'bg-blue-500 text-white'
+                      index % 2 === 1 ? 'bg-amber-600' : 'bg-blue-500 text-white'
                     }`}>
                       {expense.budget}
                     </span>

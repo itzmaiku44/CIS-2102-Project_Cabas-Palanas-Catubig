@@ -53,6 +53,15 @@ module.exports = {
 @tailwind components;
 @tailwind utilities;
 ```
+<<<<<<< HEAD
+=======
+### prop-types
+- validate the types of props passed to a component. used for login, register, edit profile, etc.
+- Command in terminal
+```
+npm install prop-types
+```
+>>>>>>> fdf11c41b6219bf7463bc48d1e11fabb509117ae
 
 ### Routers
 
