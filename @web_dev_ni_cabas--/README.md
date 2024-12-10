@@ -43,5 +43,9 @@ css file should look like this:
 @tailwind components;
 @tailwind utilities;
 ```
+### prop-types
+- validate the types of props passed to a component. used for login, register, edit profile, etc.
+- Command in terminal
+```npm install prop-types```
 
 
