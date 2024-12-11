@@ -3,16 +3,18 @@ import Sidebar from "../Sidebar/Sidebar";
 import Content1 from "./Content/Content1";
 import Content2 from "./Content/Content2";
 import Content3 from "./Content/Content3";
-import useAuthStore from "../../store/authStore"; // Import Zustand store
+import useAuthStore from "../../store/authStore";
 
 const Dashboard = () => {
   const [isExpanded, setIsExpanded] = useState(true);
   const [activeContent, setActiveContent] = useState("dashboard"); // Default view
 
   // Access the user data from Zustand store
-  const user = useAuthStore((state) => state.user); // Get user data from Zustand store
+  const user = useAuthStore((state) => state.user);
+  const token = useAuthStore((state) => state.token);
 
   console.log(user);
+  console.log(token);
 
   // Function to handle content switching
   const renderContent = () => {

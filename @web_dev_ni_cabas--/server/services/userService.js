@@ -4,21 +4,25 @@ const bcrypt = require("bcrypt");
 
 const prisma = new PrismaClient();
 
-const createUser = async (user) => {
-  // Hash the password before storing it
-  const hashedPassword = await bcrypt.hash(user.password, 12);
+const createUser = async ({ name, email, birthdate, password }) => {
+  const hashedPassword = await bcrypt.hash(password, 10);
 
   try {
-    const newUser = await prisma.user.create({
+    const user = await prisma.user.create({
       data: {
-        email: user.email,
-        name: user.name,
-        birthdate: new Date(user.birthdate),
+        email: email,
+        name: name,
+        birthdate: new Date(birthdate),
         password: hashedPassword,
       },
     });
 
-    return newUser;
+    // Generate a token for the new user
+    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
+      expiresIn: "7d",
+    });
+
+    return { token, user };
   } catch (error) {
     if (error.code === "P2002" && error.meta?.target.includes("email")) {
       throw new Error("Email already exists");
@@ -27,13 +31,10 @@ const createUser = async (user) => {
   }
 };
 
-// Login with email and password
 const login = async (email, password) => {
   try {
     const user = await prisma.user.findUnique({
-      where: {
-        email: email,
-      },
+      where: { email: email },
     });
 
     if (!user) return null; // User not found

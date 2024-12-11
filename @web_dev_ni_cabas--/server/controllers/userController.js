@@ -1,23 +1,35 @@
 const userService = require("../services/userService");
 
-// Register Controller
 const registerController = async (req, res) => {
   try {
     const { name, email, birthdate, password } = req.body;
 
-    const user = await userService.createUser({
+    const result = await userService.createUser({
       name,
       email,
       birthdate,
       password,
     });
-    res.status(201).json(user);
+
+    const { token, user } = result;
+
+    res.status(201).json({
+      token,
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        birthdate: user.birthdate,
+      },
+    });
   } catch (error) {
     if (error.message === "Email already exists") {
       return res.status(409).json({ message: error.message });
     }
     console.error(error);
-    res.status(500).json({ message: "Something went wrong" });
+    res
+      .status(500)
+      .json({ message: "Something went wrong during registration" });
   }
 };
 

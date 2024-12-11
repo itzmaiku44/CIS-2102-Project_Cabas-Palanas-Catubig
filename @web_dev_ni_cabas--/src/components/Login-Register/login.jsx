@@ -38,9 +38,9 @@ const Login = ({ setIsLogin, isVisible }) => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
-      console.log(response);
 
       const data = await response.json();
+      console.log(data);
       if (response.ok) {
         setAuth(data.token, data.user);
         setError("");
@@ -49,6 +49,7 @@ const Login = ({ setIsLogin, isVisible }) => {
         setError(data.message || "Login failed");
       }
     } catch (err) {
+      console.error("Fetch Error:", err);
       setError("An error occurred. Please try again.");
     }
   };

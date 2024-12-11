@@ -4,7 +4,7 @@ const useAuthStore = create((set) => ({
   isAuthenticated: false,
   token: null,
   user: null,
-  setAuth: (token) =>
+  setAuth: (token, user) =>
     set({
       isAuthenticated: !!token,
       token: token,
