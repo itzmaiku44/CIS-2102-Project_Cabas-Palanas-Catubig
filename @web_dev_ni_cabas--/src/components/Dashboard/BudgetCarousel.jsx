@@ -25,10 +25,12 @@ const BudgetCarousel = ({ carouselIndex, setCarouselIndex }) => {
 
   return (
     <div className="mb-8">
-      <h2 className="text-xl font-semibold mb-4 flex items-center">
-        Existing Budgets
-        <button className="ml-4 p-1 bg-green-500 text-white rounded-full">+</button>
-      </h2>
+      <div className="flex items-center mb-4">
+        <h2 className="text-xl font-semibold">Existing Budgets</h2>
+        <button className="ml-2 p-1 bg-green-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-green-600">
+          <i className="fas fa-plus text-sm"></i>
+        </button>
+      </div>
       <div className="relative flex items-center justify-center">
         <CarouselControl direction="left" onClick={handlePrevious} />
         <CarouselContent budgets={budgets} carouselIndex={carouselIndex} />

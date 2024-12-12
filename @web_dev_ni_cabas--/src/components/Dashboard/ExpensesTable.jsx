@@ -1,19 +1,26 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const ExpensesTable = () => {
-  const expenses = [
-    { name: 'Groceries', amount: 150.00, date: '2024-03-15', budget: 'Food' },
-    { name: 'Gas', amount: 45.00, date: '2024-03-14', budget: 'Travel' },
-    // Add more sample data as needed
-  ];
+// Move the sample data to a shared location (could be in a context or parent component)
+export const expensesData = [
+  { name: 'Groceries', amount: 150.00, date: '2024-03-15', budget: 'Food' },
+  { name: 'Gas', amount: 45.00, date: '2024-03-14', budget: 'Travel' },
+  { name: 'Restaurant', amount: 85.00, date: '2024-03-13', budget: 'Food' },
+  { name: 'Movies', amount: 30.00, date: '2024-03-12', budget: 'Entertainment' },
+  { name: 'Shopping', amount: 200.00, date: '2024-03-11', budget: 'Shopping' }
+];
 
+const ExpensesTable = ({ expenses = expensesData }) => {
   return (
     <div>
-      <h2 className="text-xl font-semibold mb-4 flex items-center">
-        Recent Expenses
-        <button className="ml-4 p-1 bg-green-500 text-white rounded-full">+</button>
-      </h2>
+      <div className="flex justify-between items-center mb-4">
+        <div className="flex items-center">
+          <h2 className="text-xl font-semibold">Expenses</h2>
+          <button className="ml-2 p-1 bg-green-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-green-600">
+            <i className="fas fa-plus text-sm"></i>
+          </button>
+        </div>
+      </div>
       <table className="w-full bg-white shadow rounded-md">
         <thead>
           <tr className="bg-gray-200">
@@ -51,10 +58,6 @@ const expenseShape = PropTypes.shape({
 
 ExpensesTable.propTypes = {
   expenses: PropTypes.arrayOf(expenseShape),
-};
-
-ExpensesTable.defaultProps = {
-  expenses: [],
 };
 
 export default ExpensesTable; 

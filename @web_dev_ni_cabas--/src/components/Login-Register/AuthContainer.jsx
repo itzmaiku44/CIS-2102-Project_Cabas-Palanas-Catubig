@@ -3,7 +3,7 @@ import Login from "./login";
 import Register from "./Register";
 
 const AuthContainer = () => {
-  const [isLogin, setIsLogin] = useState(true);
+  const [isLogin, setIsLogin] = useState(true); // Default state: Login
 
   return (
     <div className="flex items-center justify-center h-screen bg-gray-100">
@@ -27,4 +27,4 @@ const AuthContainer = () => {
   );
 };
 
-export default AuthContainer;
+export default AuthContainer; 

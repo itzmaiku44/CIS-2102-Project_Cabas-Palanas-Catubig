@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 
 const Content3 = () => {
-  // Sample budget data (move to context later)
+  // Updated budget data with new categories
   const budgets = [
     {
       id: 1,
-      category: 'Food & Dining',
+      category: 'Food',
       amountSpent: 6000,
       budgeted: 10000,
       remaining: 4000,
@@ -13,27 +13,35 @@ const Content3 = () => {
     },
     {
       id: 2,
-      category: 'Transportation',
+      category: 'Travel',
       amountSpent: 3000,
       budgeted: 5000,
+      remaining: 2000,
+      color: 'bg-orange-400'
+    },
+    {
+      id: 3,
+      category: 'Shopping',
+      amountSpent: 2000,
+      budgeted: 4000,
       remaining: 2000,
       color: 'bg-green-400'
     },
     {
-      id: 3,
-      category: 'Entertainment',
-      amountSpent: 2000,
-      budgeted: 4000,
-      remaining: 2000,
-      color: 'bg-brown-400'
-    },
-    {
       id: 4,
-      category: 'Shopping',
+      category: 'Entertainment',
       amountSpent: 4000,
       budgeted: 8000,
       remaining: 4000,
-      color: 'bg-blue-400'
+      color: 'bg-purple-400'
+    },
+    {
+      id: 5,
+      category: 'Health',
+      amountSpent: 1500,
+      budgeted: 3000,
+      remaining: 1500,
+      color: 'bg-red-400'
     }
   ];
 
@@ -51,8 +59,8 @@ const Content3 = () => {
   return (
     <div className="flex-1 p-8 bg-gray-50">
       {/* Top Section - Budget Progress Bars */}
-      <div className="grid grid-cols-2 gap-6 mb-8">
-        {budgets.slice(0, 4).map(budget => (
+      <div className="grid grid-cols-1 gap-6 mb-8">
+        {budgets.map(budget => (
           <div key={budget.id} className="bg-white p-4 rounded-lg shadow">
             <h3 className="text-lg font-semibold mb-2">{budget.category}</h3>
             <div className="relative h-8 bg-gray-200 rounded-lg overflow-hidden">
@@ -61,11 +69,11 @@ const Content3 = () => {
                 style={{ width: `${calculateProgress(budget.amountSpent, budget.budgeted)}%` }}
               >
                 <span className="absolute left-2 top-1/2 transform -translate-y-1/2 text-white font-medium">
-                  ₱{budget.amountSpent.toLocaleString()}
+                  [Amount Spent]
                 </span>
               </div>
               <span className="absolute right-2 top-1/2 transform -translate-y-1/2 text-green-600 font-medium">
-                ₱{budget.remaining.toLocaleString()}
+                [Remaining] [Budgeted]
               </span>
             </div>
           </div>
@@ -101,9 +109,9 @@ const Content3 = () => {
                 index % 2 === 1 ? 'bg-blue-600 text-white' : ''
               }`}
             >
-              <span className="font-medium">{budget.category}</span>
+              <span className="font-medium">[Category]</span>
               <div className="flex items-center space-x-4">
-                <span>₱{budget.budgeted.toLocaleString()}</span>
+                <span>[Budget Money]</span>
                 <button className="text-red-500 hover:text-red-700">
                   <i className="fas fa-trash-alt"></i>
                 </button>

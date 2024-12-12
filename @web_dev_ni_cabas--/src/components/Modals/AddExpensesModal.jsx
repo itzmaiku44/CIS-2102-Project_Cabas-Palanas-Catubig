@@ -9,14 +9,6 @@ const AddExpensesModal = ({ onClose, onAdd, budgets }) => {
     budget: '',
   });
 
-  const categories = [
-    "Food",
-    "Travel",
-    "Shopping",
-    "Entertainment",
-    "Health"
-  ];
-
   const handleSubmit = (e) => {
     e.preventDefault();
     onAdd({
@@ -86,9 +78,9 @@ const AddExpensesModal = ({ onClose, onAdd, budgets }) => {
                 required
               >
                 <option value="">Select a budget category</option>
-                {categories.map((category) => (
-                  <option key={category} value={category}>
-                    {category}
+                {budgets.map((budget) => (
+                  <option key={budget.category} value={budget.category}>
+                    {budget.category}
                   </option>
                 ))}
               </select>

@@ -91,8 +91,6 @@ const Sidebar = ({
       {/* Modals */}
       {showSettingsModal && (
         <SettingsModal
-          settings={settings}
-          setSettings={setSettings}
           onClose={() => setShowSettingsModal(false)}
         />
       )}

@@ -1,118 +1,91 @@
 import React, { useState } from 'react';
-import ToggleSwitch from '../shared/ToggleSwitch';
 import PropTypes from 'prop-types';
-import CustomPropTypes from '../../utils/propTypes';
-import ErrorMessage from '../shared/ErrorMessage';
-import LoadingSpinner from '../shared/LoadingSpinner';
+import { useCurrency, currencies } from '../../context/CurrencyContext';
 
-const SettingsModal = ({ settings, setSettings, onClose }) => {
-  const [formData, setFormData] = useState(settings);
-  const [error, setError] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [saveSuccess, setSaveSuccess] = useState(false);
+const SettingsModal = ({ onClose }) => {
+  const { currency, setCurrency } = useCurrency();
+  const [darkMode, setDarkMode] = useState(false);
+  const [notifications, setNotifications] = useState(true);
 
-  const handleSave = async () => {
-    try {
-      setIsSubmitting(true);
-      
-      // Validate currency
-      const validCurrencies = ['USD', 'EUR', 'GBP', 'JPY', 'PHP'];
-      if (!validCurrencies.includes(formData.currency)) {
-        setError('Please select a valid currency');
-        return;
-      }
+  const handleCurrencyChange = (e) => {
+    setCurrency(currencies[e.target.value]);
+  };
 
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      setSettings(formData);
-      setSaveSuccess(true);
-      setTimeout(() => {
-        onClose();
-      }, 500);
-    } catch (err) {
-      setError('An error occurred while saving settings');
-    } finally {
-      setIsSubmitting(false);
-    }
+  const handleSave = () => {
+    // Save settings to localStorage or your preferred storage method
+    localStorage.setItem('settings', JSON.stringify({
+      darkMode,
+      notifications,
+      currency: currency.code
+    }));
+    
+    // Close the modal after saving
+    onClose();
   };
 
   return (
     <>
-      {/* Modal Overlay */}
-      <div 
-        className="fixed inset-0 bg-black bg-opacity-50 z-[60]"
-        onClick={onClose}
-      ></div>
-
-      {/* Modal Content */}
-      <div className="fixed inset-0 flex items-center justify-center z-[60]" onClick={(e) => e.stopPropagation()}>
-        <div className={`bg-white rounded-lg p-6 w-96 relative transform transition-all duration-300 ${
-          saveSuccess ? 'scale-95 opacity-0' : 'scale-100 opacity-100'
-        }`}>
+      <div className="fixed inset-0 bg-black bg-opacity-50 z-50" onClick={onClose}></div>
+      
+      <div className="fixed inset-0 flex items-center justify-center z-50" onClick={(e) => e.stopPropagation()}>
+        <div className={`${darkMode ? 'bg-gray-800' : 'bg-[#FFF5F1]'} rounded-lg p-6 w-[400px] relative`}>
           <button
             onClick={onClose}
-            className="absolute top-2 right-3 text-gray-500 text-2xl"
+            className="absolute top-4 right-4"
           >
-            <i className="fas fa-times"></i>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
           </button>
 
-          <h2 className="text-xl font-bold mb-4">Settings</h2>
+          <h2 className="text-2xl font-bold mb-8 text-blue-600">Settings</h2>
 
-          {error && <ErrorMessage message={error} />}
-
-          <div className="flex justify-between items-center mb-4">
-            <ToggleSwitch
-              label="Dark Mode"
-              value={formData.isDarkTheme}
-              onChange={(value) => setFormData(prev => ({ ...prev, isDarkTheme: value }))}
-            />
-            <ToggleSwitch
-              label="Notifications"
-              value={formData.isNotificationEnabled}
-              onChange={(value) => setFormData(prev => ({ ...prev, isNotificationEnabled: value }))}
-            />
+          <div className="flex items-center justify-between mb-6">
+            <span className="text-blue-600 font-medium">Dark Mode</span>
+            <label className="relative inline-flex items-center cursor-pointer">
+              <input
+                type="checkbox"
+                className="sr-only peer"
+                checked={darkMode}
+                onChange={(e) => setDarkMode(e.target.checked)}
+              />
+              <div className="w-12 h-6 bg-gray-300 rounded-full peer peer-checked:bg-blue-600 after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-6"></div>
+            </label>
           </div>
 
-          <div className="mb-4">
-            <label className="block text-sm mb-2 font-bold">Currency</label>
+          <div className="flex items-center justify-between mb-6">
+            <span className="text-blue-600 font-medium">notification</span>
+            <label className="relative inline-flex items-center cursor-pointer">
+              <input
+                type="checkbox"
+                className="sr-only peer"
+                checked={notifications}
+                onChange={(e) => setNotifications(e.target.checked)}
+              />
+              <div className="w-12 h-6 bg-gray-300 rounded-full peer peer-checked:bg-blue-600 after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-6"></div>
+            </label>
+          </div>
+
+          <div className="mb-6">
+            <label className="block text-blue-600 font-medium mb-2">Currency</label>
             <select
-              value={formData.currency}
-              onChange={(e) => {
-                setFormData(prev => ({ ...prev, currency: e.target.value }));
-                setError('');
-              }}
-              className={`w-full p-2 border rounded-md ${error ? 'border-red-500' : 'border-gray-300'}`}
+              className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+              value={currency.code}
+              onChange={handleCurrencyChange}
             >
-              <option value="PHP">PHP</option>
-              <option value="USD">USD</option>
-              <option value="EUR">EUR</option>
-              <option value="GBP">GBP</option>
-              <option value="JPY">JPY</option>
+              {Object.entries(currencies).map(([code, { symbol }]) => (
+                <option key={code} value={code}>
+                  {code} ({symbol})
+                </option>
+              ))}
             </select>
           </div>
 
-          <button
+          <button 
             onClick={handleSave}
-            disabled={isSubmitting}
-            className={`w-full p-2 rounded-md transition-all duration-300 flex items-center justify-center
-              ${isSubmitting ? 'bg-blue-400' : 'bg-blue-500 hover:bg-blue-600'}
-              ${saveSuccess ? 'bg-green-500' : ''}
-            `}
+            className="w-full bg-blue-600 text-white py-3 rounded-md hover:bg-blue-700 transition-colors"
           >
-            {isSubmitting ? (
-              <>
-                <LoadingSpinner size="small" light />
-                <span className="ml-2 text-white">Saving...</span>
-              </>
-            ) : saveSuccess ? (
-              <>
-                <i className="fas fa-check mr-2"></i>
-                <span className="text-white">Saved!</span>
-              </>
-            ) : (
-              <span className="text-white">Save Settings</span>
-            )}
+            Save
           </button>
         </div>
       </div>
@@ -121,8 +94,6 @@ const SettingsModal = ({ settings, setSettings, onClose }) => {
 };
 
 SettingsModal.propTypes = {
-  settings: CustomPropTypes.settings.isRequired,
-  setSettings: PropTypes.func.isRequired,
   onClose: PropTypes.func.isRequired,
 };
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const ViewDetailsModal = ({ budget, onClose }) => {
+const ViewDetailsModal = ({ budget, onClose, currency }) => {
   return (
     <>
       <div className="fixed inset-0 bg-black bg-opacity-50 z-50" onClick={onClose}></div>
@@ -32,21 +32,21 @@ const ViewDetailsModal = ({ budget, onClose }) => {
               <div className="bg-gray-50 p-4 rounded-lg">
                 <p className="text-gray-600">Total Budget</p>
                 <p className="text-2xl font-bold text-blue-600">
-                  ₱{budget.budgetMoney.toLocaleString()}
+                  {currency.symbol}{budget.budgetMoney.toLocaleString()}
                 </p>
               </div>
               
               <div className="bg-gray-50 p-4 rounded-lg">
                 <p className="text-gray-600">Money Spent</p>
                 <p className="text-2xl font-bold text-red-500">
-                  ₱{budget.moneySpent.toLocaleString()}
+                  {currency.symbol}{budget.moneySpent.toLocaleString()}
                 </p>
               </div>
               
               <div className="bg-gray-50 p-4 rounded-lg">
                 <p className="text-gray-600">Remaining Budget</p>
                 <p className="text-2xl font-bold text-green-500">
-                  ₱{budget.remainingBudget.toLocaleString()}
+                  {currency.symbol}{budget.remainingBudget.toLocaleString()}
                 </p>
               </div>
               
@@ -72,6 +72,9 @@ ViewDetailsModal.propTypes = {
     remainingBudget: PropTypes.number.isRequired,
   }).isRequired,
   onClose: PropTypes.func.isRequired,
+  currency: PropTypes.shape({
+    symbol: PropTypes.string.isRequired,
+  }).isRequired,
 };
 
 export default ViewDetailsModal; 
