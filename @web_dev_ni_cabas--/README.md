@@ -75,3 +75,8 @@ npm install zustand
 
 user email: testuser@example.com
 user password: TestPassword123
+
+
+## Pie Chart
+
+npm install chart.js react-chartjs-2 
