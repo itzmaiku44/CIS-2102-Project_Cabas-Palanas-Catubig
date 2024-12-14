@@ -3,7 +3,6 @@ import { Pie } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { useCurrency } from '../../../context/CurrencyContext';
 import { useExpensesStore } from '../ExpensesTable';
-import { useBudgetStore } from '../../../stores/budgetStore';
 import AddExpensesModal from '../../Modals/AddExpensesModal';
 import DeleteExpensesModal from '../../Modals/DeleteExpensesModal';
 import EditExpensesModal from '../../Modals/EditExpensesModal';
@@ -18,9 +17,8 @@ const Content2 = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedExpense, setSelectedExpense] = useState(null);
 
-  // Get expenses and budgets from stores
+  // Get expenses from store
   const { expenses, addExpense, editExpense, deleteExpense } = useExpensesStore();
-  const { budgets } = useBudgetStore();
 
   // Filter expenses based on search term
   const filteredExpenses = expenses.filter(expense => 

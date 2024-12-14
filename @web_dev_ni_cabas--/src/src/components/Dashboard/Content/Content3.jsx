@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { useBudgetStore } from '../../../stores/budgetStore';
+import { useExpensesStore } from '../ExpensesTable';
 import AddBudgetModal from '../../Modals/AddBudgetModal';
 import EditBudgetModal from '../../Modals/EditBudgetModal';
 import DeleteBudgetModal from '../../Modals/DeleteBudgetModal';
 
 const Content3 = () => {
   const { budgets, addBudget, editBudget, deleteBudget } = useBudgetStore();
+  const { expenses } = useExpensesStore();
   const [searchTerm, setSearchTerm] = useState('');
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -17,21 +19,28 @@ const Content3 = () => {
     return (spent / total) * 100;
   };
 
+  // Calculate total spent per category from expenses
+  const calculateTotalSpentPerCategory = (category) => {
+    return expenses
+      .filter(expense => expense.budget === category)
+      .reduce((total, expense) => total + expense.amount, 0);
+  };
+
   // Group budgets by category and sum their values
   const groupedBudgets = budgets.reduce((acc, budget) => {
     if (!acc[budget.category]) {
+      const totalSpent = calculateTotalSpentPerCategory(budget.category);
       acc[budget.category] = {
         id: budget.id,
         category: budget.category,
         budgeted: 0,
-        amountSpent: 0,
+        amountSpent: totalSpent,
         remaining: 0,
         color: budget.color
       };
     }
     acc[budget.category].budgeted += budget.budgeted;
-    acc[budget.category].amountSpent += budget.amountSpent;
-    acc[budget.category].remaining += budget.remaining;
+    acc[budget.category].remaining = acc[budget.category].budgeted - acc[budget.category].amountSpent;
     return acc;
   }, {});
 
@@ -59,7 +68,7 @@ const Content3 = () => {
   return (
     <div className="flex-1 p-8 bg-gray-50">
       {/* Title for Budget Progress Bars */}
-      <h2 className="text-2xl font-bold mb-4">Budget Categories Overview</h2>
+      <h2 className="text-2xl font-bold mb-6">Budget Categories Overview</h2>
 
       {/* Top Section - Budget Progress Bars */}
       <div className="grid grid-cols-1 gap-4 mb-6">
@@ -117,7 +126,7 @@ const Content3 = () => {
 
         <div className="bg-white rounded-lg shadow overflow-hidden">
           {/* Add Table Headers */}
-          <div className="grid grid-cols-3 gap-2 p-4 bg-gray-50 border-b">
+          <div className="grid grid-cols-3 gap-4 p-4 bg-gray-50 border-b">
             <div className="text-center font-semibold text-gray-600">Category</div>
             <div className="text-center font-semibold text-gray-600">Budget Money</div>
             <div className="text-center font-semibold text-gray-600"></div>
@@ -127,13 +136,13 @@ const Content3 = () => {
           {filteredBudgets.map((budget, index) => (
             <div
               key={budget.id}
-              className={`grid grid-cols-3 gap-2 p-4 ${
+              className={`grid grid-cols-3 gap-4 p-4 ${
                 index % 2 === 1 ? 'bg-gray-50' : ''
               }`}
             >
               <span className="text-center font-medium">{budget.category}</span>
               <div className="text-center">₱{budget.budgeted.toLocaleString()}</div>
-              <div className="flex items-center space-x-2 justify-center">
+              <div className="flex items-center space-x-4 justify-end">
                 <button 
                   onClick={() => {
                     setSelectedBudget(budget);
