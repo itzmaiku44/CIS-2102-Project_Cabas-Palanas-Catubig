@@ -4,6 +4,7 @@ import CustomPropTypes from '../../utils/propTypes';
 import { useBudgetStore } from '../../stores/budgetStore';
 import { useCurrency } from '../../context/CurrencyContext';
 import ViewDetailsModal from '../Modals/ViewDetailsModal';
+import { useExpensesStore } from '../Dashboard/ExpensesTable';
 
 const BudgetCarousel = ({ carouselIndex, setCarouselIndex }) => {
   const { currency } = useCurrency();
@@ -86,7 +87,15 @@ const CarouselContent = ({ budgets, carouselIndex, onViewDetails }) => (
 );
 
 const BudgetCard = ({ budget, onViewDetails }) => {
-  const spentPercentage = (budget.amountSpent / budget.budgeted) * 100;
+  const { expenses } = useExpensesStore();
+  
+  // Calculate actual spent amount
+  const actualSpent = expenses
+    .filter(expense => expense.budget === budget.category)
+    .reduce((total, expense) => total + expense.amount, 0);
+
+  // Update percentage calculations
+  const spentPercentage = (actualSpent / budget.budgeted) * 100;
   const remainingPercentage = 100 - spentPercentage;
 
   return (
@@ -104,8 +113,8 @@ const BudgetCard = ({ budget, onViewDetails }) => {
           <span className="text-green-500">{remainingPercentage.toFixed(1)}% remaining</span>
         </p>
         <button 
-          onClick={onViewDetails}
-          className="mt-2 px-4 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+          onClick={() => onViewDetails(budget)}
+          className="px-3 py-1 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors mx-auto block text-sm"
         >
           View Details
         </button>
