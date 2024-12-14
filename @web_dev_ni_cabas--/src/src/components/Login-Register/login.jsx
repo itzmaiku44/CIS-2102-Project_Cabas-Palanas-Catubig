@@ -1,12 +1,57 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import ErrorMessage from "../shared/ErrorMessage";
+import useAuthStore from "../../store/authStore";
 
 const Login = ({ setIsLogin, isVisible }) => {
   const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const setAuth = useAuthStore((state) => state.setAuth);
 
-  const handleSubmit = (e) => {
+  const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    navigate('/dashboard');
+
+    //validate inputs
+    if (!email) {
+      setError("Email is required.");
+      return;
+    }
+
+    if (!validateEmail(email)) {
+      setError("Please enter a valid email address.");
+      return;
+    }
+
+    if (!password) {
+      setError("Password is required.");
+      return;
+    }
+
+    //try login first
+    try {
+      const response = await fetch("http://localhost:3000/users/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+      console.log(data);
+      if (response.ok) {
+        setAuth(data.token, data.user);
+        setError("");
+        navigate("/dashboard");
+      } else {
+        setError(data.message || "Login failed");
+      }
+    } catch (err) {
+      console.error("Fetch Error:", err);
+      setError("An error occurred. Please try again.");
+    }
   };
 
   return (
@@ -23,6 +68,8 @@ const Login = ({ setIsLogin, isVisible }) => {
             type="email"
             className="w-full p-2 mt-1 rounded-lg bg-gray-100 border-gray-300 shadow-sm"
             placeholder="Enter your email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
           />
         </label>
         <label className="block mb-6">
@@ -31,8 +78,14 @@ const Login = ({ setIsLogin, isVisible }) => {
             type="password"
             className="w-full p-2 mt-1 rounded-lg bg-gray-100 border-gray-300 shadow-sm"
             placeholder="Enter your password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
           />
         </label>
+
+        {/* Display ErrorMessage component */}
+        <ErrorMessage message={error} />
+
         <p className="mt-4 mb-4 text-sm text-gray-500">
           Don't have an account?{" "}
           <a
