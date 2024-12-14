@@ -1,43 +1,46 @@
 import React from 'react';
-import PropTypes from 'prop-types';
+import { create } from 'zustand';
+import { useCurrency } from '../../context/CurrencyContext';
 
-// Move the sample data to a shared location (could be in a context or parent component)
-export const expensesData = [
-  { name: 'Groceries', amount: 150.00, date: '2024-03-15', budget: 'Food' },
-  { name: 'Gas', amount: 45.00, date: '2024-03-14', budget: 'Travel' },
-  { name: 'Restaurant', amount: 85.00, date: '2024-03-13', budget: 'Food' },
-  { name: 'Movies', amount: 30.00, date: '2024-03-12', budget: 'Entertainment' },
-  { name: 'Shopping', amount: 200.00, date: '2024-03-11', budget: 'Shopping' }
-];
+// Expenses Store
+export const useExpensesStore = create((set) => ({
+  expenses: [],
+  addExpense: (expense) => set((state) => ({
+    expenses: [...state.expenses, { ...expense, id: Date.now() }]
+  })),
+  editExpense: (updatedExpense) => set((state) => ({
+    expenses: state.expenses.map(expense =>
+      expense.id === updatedExpense.id ? updatedExpense : expense
+    )
+  })),
+  deleteExpense: (expenseId) => set((state) => ({
+    expenses: state.expenses.filter(expense => expense.id !== expenseId)
+  })),
+}));
 
-const ExpensesTable = ({ expenses = expensesData }) => {
+const ExpensesTable = () => {
+  const { currency } = useCurrency();
+  const { expenses } = useExpensesStore();
+
   return (
-    <div>
-      <div className="flex justify-between items-center mb-4">
-        <div className="flex items-center">
-          <h2 className="text-xl font-semibold">Expenses</h2>
-          <button className="ml-2 p-1 bg-green-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-green-600">
-            <i className="fas fa-plus text-sm"></i>
-          </button>
-        </div>
-      </div>
-      <table className="w-full bg-white shadow rounded-md">
+    <div className="bg-white rounded-lg shadow overflow-hidden">
+      <table className="w-full">
         <thead>
-          <tr className="bg-gray-200">
-            <th className="text-left p-4">Expense</th>
-            <th className="text-left p-4">Amount</th>
-            <th className="text-left p-4">Date</th>
-            <th className="text-left p-4">Budget</th>
+          <tr className="bg-gray-50">
+            <th className="px-6 py-3 text-left text-gray-500 font-medium">Name</th>
+            <th className="px-6 py-3 text-left text-gray-500 font-medium">Amount</th>
+            <th className="px-6 py-3 text-left text-gray-500 font-medium">Date</th>
+            <th className="px-6 py-3 text-left text-gray-500 font-medium">Budget</th>
           </tr>
         </thead>
         <tbody>
           {expenses.map((expense, index) => (
-            <tr key={index} className="border-b">
-              <td className="p-4">{expense.name}</td>
-              <td className="p-4">${expense.amount.toFixed(2)}</td>
-              <td className="p-4">{expense.date}</td>
-              <td className="p-4">
-                <span className="bg-blue-500 text-white py-1 px-3 rounded-md">
+            <tr key={expense.id} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+              <td className="px-6 py-4">{expense.name}</td>
+              <td className="px-6 py-4">{currency.symbol}{expense.amount.toLocaleString()}</td>
+              <td className="px-6 py-4">{expense.date}</td>
+              <td className="px-6 py-4">
+                <span className="px-3 py-1 rounded-full bg-blue-100 text-blue-800">
                   {expense.budget}
                 </span>
               </td>
@@ -49,15 +52,4 @@ const ExpensesTable = ({ expenses = expensesData }) => {
   );
 };
 
-const expenseShape = PropTypes.shape({
-  name: PropTypes.string.isRequired,
-  amount: PropTypes.number.isRequired,
-  date: PropTypes.string.isRequired,
-  budget: PropTypes.string.isRequired,
-});
-
-ExpensesTable.propTypes = {
-  expenses: PropTypes.arrayOf(expenseShape),
-};
-
-export default ExpensesTable; 
+export default ExpensesTable;

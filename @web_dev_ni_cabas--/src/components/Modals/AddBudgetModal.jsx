@@ -1,19 +1,31 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+import { useCurrency } from '../../context/CurrencyContext';
 
 const AddBudgetModal = ({ onClose, onAdd }) => {
+  const { currency } = useCurrency();
   const [budgetData, setBudgetData] = useState({
     category: '',
-    budgetMoney: '',
+    budgeted: '',
+    amountSpent: 0,
   });
+
+  // Predefined categories
+  const categories = [
+    'Food',
+    'Travel',
+    'Shopping',
+    'Entertainment',
+    'Health'
+  ];
 
   const handleSubmit = (e) => {
     e.preventDefault();
     onAdd({
       ...budgetData,
-      budgetMoney: parseFloat(budgetData.budgetMoney),
-      moneySpent: 0,
-      remainingBudget: parseFloat(budgetData.budgetMoney)
+      budgeted: parseFloat(budgetData.budgeted),
+      amountSpent: 0,
+      remaining: parseFloat(budgetData.budgeted) // Initial remaining is full budget amount
     });
     onClose();
   };
@@ -36,25 +48,37 @@ const AddBudgetModal = ({ onClose, onAdd }) => {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block text-gray-700 mb-2">Category</label>
-              <input
-                type="text"
+              <select
                 className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={budgetData.category}
                 onChange={(e) => setBudgetData({ ...budgetData, category: e.target.value })}
                 required
-              />
+              >
+                <option value="">Select a category</option>
+                {categories.map((category) => (
+                  <option key={category} value={category}>
+                    {category}
+                  </option>
+                ))}
+              </select>
             </div>
 
             <div>
               <label className="block text-gray-700 mb-2">Budget Amount</label>
-              <input
-                type="number"
-                className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={budgetData.budgetMoney}
-                onChange={(e) => setBudgetData({ ...budgetData, budgetMoney: e.target.value })}
-                min="0"
-                required
-              />
+              <div className="relative">
+                <span className="absolute left-3 top-2 text-gray-600">
+                  {currency.symbol}
+                </span>
+                <input
+                  type="number"
+                  className="w-full pl-8 pr-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={budgetData.budgeted}
+                  onChange={(e) => setBudgetData({ ...budgetData, budgeted: e.target.value })}
+                  min="0"
+                  step="0.01"
+                  required
+                />
+              </div>
             </div>
 
             <button
