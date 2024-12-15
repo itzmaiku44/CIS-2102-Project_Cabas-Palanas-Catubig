@@ -55,14 +55,12 @@ npm install @fortawesome/fontawesome-free
 @tailwind components;
 @tailwind utilities;
 ```
-
-</br>
 </br>
 </br>
 </br>
 
 # PACKAGES
-=======
+
 ### prop-types
 - validate the types of props passed to a component. used for login, register, edit profile, etc.
 - Command in terminal
