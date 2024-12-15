@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import BudgetCarousel from "./Budget Page/BudgetCarousel";
 import ExpensesTable from "./Expense Page/ExpensesTable";
 import Sidebar from "./Sidebar";
@@ -7,6 +7,20 @@ import useAuthStore from "../../store/authStore";
 // Main Dashboard Component
 const Dashboard = () => {
   const { user } = useAuthStore();
+  const [isLoading, setIsLoading] = useState(true);
+  console.log("User data in Dashboard:", user);
+
+  useEffect(() => {
+    // Simulate an API call or check if user data is updated after login or edit
+    if (user) {
+      setIsLoading(false);
+    }
+  }, [user]);
+
+  // If user is loading or not found, display loading state
+  if (isLoading || !user) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="flex h-screen bg-gray-100">

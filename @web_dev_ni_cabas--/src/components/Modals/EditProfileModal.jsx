@@ -1,40 +1,35 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import ErrorMessage from "../shared/ErrorMessage";
 import LoadingSpinner from "../shared/LoadingSpinner";
+import useAuthStore from "../../store/authStore";
 
-const EditProfileModal = ({ profileData, setProfileData, onClose }) => {
+const EditProfileModal = ({ profileData, onClose }) => {
   const [formData, setFormData] = useState(profileData);
   const [confirmPassword, setConfirmPassword] = useState("");
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
 
+  // Access store values individually
+  const token = useAuthStore((state) => state.token);
+  const user = useAuthStore((state) => state.user);
+  const updateUserProfile = useAuthStore((state) => state.updateUserProfile);
+  console.log("User in EditProfileModal:", user);
+
+  const navigate = useNavigate();
+
   const validateForm = () => {
     const newErrors = {};
-
-    // Name validation
-    if (!formData.name.trim()) {
+    if (!formData.name?.trim()) {
       newErrors.name = "Name is required";
     }
-
-    // Email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(formData.email)) {
-      newErrors.email = "Please enter a valid email address";
+    if (!formData.email?.trim()) {
+      newErrors.email = "Email is required";
     }
-
-    // Password validation
-    if (formData.password) {
-      const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
-      if (!passwordRegex.test(formData.password)) {
-        newErrors.password =
-          "Password must be at least 8 characters with 1 uppercase, 1 lowercase, and 1 number";
-      }
-      if (formData.password !== confirmPassword) {
-        newErrors.confirmPassword = "Passwords do not match";
-      }
+    if (formData.password && formData.password !== confirmPassword) {
+      newErrors.confirmPassword = "Passwords do not match";
     }
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -45,7 +40,6 @@ const EditProfileModal = ({ profileData, setProfileData, onClose }) => {
       ...prev,
       [name]: value,
     }));
-    // Clear error when user starts typing
     if (errors[name]) {
       setErrors((prev) => ({
         ...prev,
@@ -57,16 +51,60 @@ const EditProfileModal = ({ profileData, setProfileData, onClose }) => {
   const handleSubmit = async () => {
     if (validateForm()) {
       setIsSubmitting(true);
+
       try {
-        // Simulate API call
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-        setProfileData(formData);
-        setSaveSuccess(true);
-        setTimeout(() => {
-          onClose();
-        }, 500);
+        const payload = {
+          userId: user.id,
+          name: formData.name,
+          email: formData.email,
+        };
+        if (formData.password) {
+          payload.password = formData.password;
+        }
+
+        const response = await fetch(
+          "http://localhost:3000/users/changePassword",
+          {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `${token}`,
+            },
+            body: JSON.stringify(payload),
+          }
+        );
+        console.log("this is from response", response);
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || "Failed to update profile");
+        }
+
+        const result = await response.json();
+        console.log("Response:", result);
+        if (result && result.data) {
+          console.log("Updated user:", result.data);
+
+          // Update user in store and localStorage
+          updateUserProfile({
+            ...user,
+            ...result.data,
+          });
+
+          localStorage.setItem("user", JSON.stringify(result.data)); // Persist updated user
+          setSaveSuccess(true);
+
+          setTimeout(() => {
+            onClose();
+            navigate("/dashboard");
+          }, 500);
+        } else {
+          throw new Error("User data missing in response");
+        }
       } catch (error) {
-        setErrors({ submit: "Failed to save changes" });
+        setErrors({
+          submit: error.message || "Failed to save changes. Please try again.",
+        });
       } finally {
         setIsSubmitting(false);
       }
@@ -75,13 +113,10 @@ const EditProfileModal = ({ profileData, setProfileData, onClose }) => {
 
   return (
     <>
-      {/* Modal Overlay */}
       <div
         className="fixed inset-0 bg-black bg-opacity-50 z-[60]"
         onClick={onClose}
       ></div>
-
-      {/* Modal Content */}
       <div
         className="fixed inset-0 flex items-center justify-center z-[60]"
         onClick={(e) => e.stopPropagation()}
@@ -91,19 +126,15 @@ const EditProfileModal = ({ profileData, setProfileData, onClose }) => {
             saveSuccess ? "scale-95 opacity-0" : "scale-100 opacity-100"
           }`}
         >
-          {/* Close Button */}
           <button
             onClick={onClose}
             className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-2 text-lg"
           >
             <i className="fas fa-times"></i>
           </button>
-
           <h2 className="text-2xl font-bold text-blue-600 mb-6">
             Edit Profile
           </h2>
-
-          {/* Form Fields - 2x2 Grid Layout */}
           <div className="grid grid-cols-2 gap-4 mb-6">
             <FormField
               label="Name"
@@ -125,7 +156,7 @@ const EditProfileModal = ({ profileData, setProfileData, onClose }) => {
               label="Password"
               name="password"
               type="password"
-              value={formData.password}
+              value={formData.password || ""}
               onChange={handleInputChange}
               error={errors.password}
             />
@@ -138,14 +169,12 @@ const EditProfileModal = ({ profileData, setProfileData, onClose }) => {
               error={errors.confirmPassword}
             />
           </div>
-
           <button
             onClick={handleSubmit}
             disabled={isSubmitting}
-            className={`mt-4 w-full rounded p-2 transition-all duration-300 flex items-center justify-center
-              ${isSubmitting ? "bg-blue-400" : "bg-blue-500 hover:bg-blue-600"}
-              ${saveSuccess ? "bg-green-500" : ""}
-            `}
+            className={`mt-4 w-full rounded p-2 transition-all duration-300 flex items-center justify-center ${
+              isSubmitting ? "bg-blue-400" : "bg-blue-500 hover:bg-blue-600"
+            } ${saveSuccess ? "bg-green-500" : ""}`}
           >
             {isSubmitting ? (
               <>
@@ -161,19 +190,13 @@ const EditProfileModal = ({ profileData, setProfileData, onClose }) => {
               <span className="text-white">Save Changes</span>
             )}
           </button>
-
-          {errors.submit && (
-            <div className="mt-2">
-              <ErrorMessage message={errors.submit} />
-            </div>
-          )}
+          {errors.submit && <ErrorMessage message={errors.submit} />}
         </div>
       </div>
     </>
   );
 };
 
-// Helper component for form fields
 const FormField = ({ label, name, type, value, onChange, error }) => (
   <div className="mb-4">
     <label className="block text-blue-600 mb-2">{label}</label>
@@ -187,7 +210,7 @@ const FormField = ({ label, name, type, value, onChange, error }) => (
       } text-black`}
       placeholder={`Enter your ${label.toLowerCase()}`}
     />
-    <ErrorMessage message={error} />
+    {error && <ErrorMessage message={error} />}
   </div>
 );
 

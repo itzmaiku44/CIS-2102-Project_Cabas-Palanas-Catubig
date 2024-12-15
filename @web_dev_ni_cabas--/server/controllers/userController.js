@@ -73,54 +73,36 @@ const loginController = async (req, res) => {
   }
 };
 
-// Change Password Controller
-const changePasswordController = async (req, res) => {
-  const { oldPassword, newPassword, confirmPassword } = req.body;
-  const userId = req.user.id; // Assume user ID is available in req.user (after authentication)
-
-  // Validate input
-  if (!oldPassword || !newPassword || !confirmPassword) {
-    return res
-      .status(400)
-      .json({ message: "Please provide all required fields." });
-  }
-
-  if (newPassword !== confirmPassword) {
-    return res
-      .status(400)
-      .json({ message: "New password and confirm password do not match." });
-  }
-
-  if (newPassword.length < 8) {
-    return res
-      .status(400)
-      .json({ message: "Password must be at least 8 characters long." });
-  }
-
+// Patch Profile
+const updateProfileController = async (req, res) => {
   try {
-    // Call service to change the password
-    const result = await changePasswordService.changePassword(
-      userId,
-      oldPassword,
-      newPassword
-    );
+    const { userId, name, email, password } = req.body;
 
-    // If password is successfully changed, respond with success message
-    if (result.success) {
-      return res
-        .status(200)
-        .json({ message: "Password changed successfully." });
-    } else {
-      return res.status(400).json({ message: result.message });
+    const updatedProfile = await userService.updateProfileService({
+      userId,
+      name,
+      email,
+      password,
+    });
+
+    if (!updatedProfile) {
+      return res.status(404).json({ message: "User not found" });
     }
+
+    res.status(200).json({
+      message: "Profile updated successfully",
+      data: updatedProfile,
+    });
   } catch (error) {
-    console.error("Error changing password:", error);
-    return res.status(500).json({ message: "Internal server error." });
+    console.error("Error updating profile:", error);
+    res
+      .status(500)
+      .json({ message: "An error occurred while updating profile" });
   }
 };
 
 module.exports = {
   registerController,
   loginController,
-  changePasswordController,
+  updateProfileController,
 };

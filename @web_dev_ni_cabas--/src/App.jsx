@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -10,11 +10,11 @@ import Expenses from "./components/Main Content/Expense Page/Expenses._main";
 import Budgets from "./components/Main Content/Budget Page/Budget_main";
 import AuthContainer from "./components/Login-Register/AuthContainer";
 import useAuthStore from "./store/authStore";
-import { CurrencyProvider } from "./context/CurrencyContext";
 import { ThemeProvider } from "./context/ThemeContext";
 
 // Protected Route Component
-const ProtectedRoute = ({ isAuthenticated, children }) => {
+const ProtectedRoute = ({ children }) => {
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   return isAuthenticated ? children : <Navigate to="/" />;
 };
 
@@ -22,57 +22,43 @@ const ProtectedRoute = ({ isAuthenticated, children }) => {
 const NotFound = () => <div>404: Page Not Found</div>;
 
 const App = () => {
-  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
-  const setAuth = useAuthStore((state) => state.setAuth);
-
-  // Rehydrate auth state from localStorage
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    const user = localStorage.getItem("user");
-    if (token && user) {
-      setAuth(token, JSON.parse(user));
-    }
-  }, [setAuth]);
-
   return (
     <ThemeProvider>
-      <CurrencyProvider>
-        <Router>
-          <Routes>
-            {/* Public Route */}
-            <Route path="/" element={<AuthContainer />} />
+      <Router>
+        <Routes>
+          {/* Public Route */}
+          <Route path="/" element={<AuthContainer />} />
 
-            {/* Protected Route */}
-            <Route
-              path="/dashboard"
-              element={
-                <ProtectedRoute isAuthenticated={isAuthenticated}>
-                  <Dashboard />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/expenses"
-              element={
-                <ProtectedRoute isAuthenticated={isAuthenticated}>
-                  <Expenses />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/budgets"
-              element={
-                <ProtectedRoute isAuthenticated={isAuthenticated}>
-                  <Budgets />
-                </ProtectedRoute>
-              }
-            />
+          {/* Protected Routes */}
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/expenses"
+            element={
+              <ProtectedRoute>
+                <Expenses />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/budgets"
+            element={
+              <ProtectedRoute>
+                <Budgets />
+              </ProtectedRoute>
+            }
+          />
 
-            {/* 404 Page */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </Router>
-      </CurrencyProvider>
+          {/* 404 Page */}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </Router>
     </ThemeProvider>
   );
 };

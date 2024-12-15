@@ -54,42 +54,40 @@ const login = async (email, password) => {
   }
 };
 
-// Change User Password
-const changePasswordService = async (userId, oldPassword, newPassword) => {
+// Patch User Profile
+const updateProfileService = async ({ userId, name, email, password }) => {
   try {
-    // Find the user by ID using Prisma
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-    });
+    // Fetch user by ID
+    const user = await prisma.user.findUnique({ where: { id: userId } });
 
-    if (!user) {
-      return { success: false, message: "User not found." };
+    if (!user) return null;
+
+    const updatedData = {};
+
+    if (name) updatedData.name = name;
+    if (email) updatedData.email = email;
+
+    if (password) {
+      const salt = await bcrypt.genSalt(10);
+      updatedData.password = await bcrypt.hash(password, salt);
     }
 
-    // Check if old password matches
-    const isMatch = await bcrypt.compare(oldPassword, user.password);
-    if (!isMatch) {
-      return { success: false, message: "Old password is incorrect." };
-    }
-
-    // Hash the new password
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
-
-    // Update the user's password
-    await prisma.user.update({
+    // Update user in the database
+    const updatedUser = await prisma.user.update({
       where: { id: userId },
-      data: { password: hashedPassword },
+      data: updatedData,
     });
 
-    return { success: true };
+    const { password: _, ...userWithoutPassword } = updatedUser;
+    return userWithoutPassword;
   } catch (error) {
-    console.error("Error in changePasswordService:", error);
-    throw new Error("Error changing password");
+    console.error("Error in updateUserProfile service:", error);
+    throw new Error("Failed to update profile");
   }
 };
 
 module.exports = {
   createUser,
   login,
-  changePasswordService,
+  updateProfileService,
 };

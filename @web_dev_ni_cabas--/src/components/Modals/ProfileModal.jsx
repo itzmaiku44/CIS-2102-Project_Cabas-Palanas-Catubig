@@ -5,11 +5,11 @@ import EditProfileModal from "./EditProfileModal";
 const ProfileModal = ({ profileData, onClose }) => {
   const { user } = useAuthStore();
   const [isEditing, setIsEditing] = useState(false);
+  console.log("User data in Profilemodal:", user);
 
   // Handle opening the edit profile modal
   const handleEdit = () => {
     setIsEditing(true);
-    onClose(); // Close the profile modal when editing begins
   };
 
   // Handle closing the edit profile modal
