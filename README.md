@@ -1,6 +1,5 @@
 # Website Development II   CIS2102
-</br> 
-
+## SHEPHERD'S LEDGER
 ### *members:*   
 - CARL FRANCOISE A. CABAS
 - Michael James N. Catubig   
