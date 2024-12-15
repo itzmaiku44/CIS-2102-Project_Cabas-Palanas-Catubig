@@ -101,7 +101,7 @@ user password: TestPassword123
 npm install chart.js react-chartjs-2
 ```
 
-##Sidebar
+## Sidebar
 ```
 npm install lucide-react
 ```
