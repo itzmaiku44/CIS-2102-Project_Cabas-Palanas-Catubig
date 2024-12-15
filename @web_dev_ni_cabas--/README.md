@@ -97,7 +97,7 @@ user password: TestPassword123
 ```
 
 ## Pie Chart
-
+```
 npm install chart.js react-chartjs-2
 ```
 
