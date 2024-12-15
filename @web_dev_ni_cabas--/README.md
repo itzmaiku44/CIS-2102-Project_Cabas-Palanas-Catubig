@@ -58,7 +58,17 @@ npm install @fortawesome/fontawesome-free
 @tailwind utilities;
 ```
 
+<<<<<<< HEAD
+
 # <<<<<<< HEAD
+
+=======
+
+### PACKAGES
+
+=======
+
+> > > > > > > c9b1a4fcd14d4d5570c206dee5786f2558808310
 
 ### prop-types
 
@@ -94,3 +104,5 @@ user password: TestPassword123
 
 npm install chart.js react-chartjs-2
 ```
+
+npm install lucide-react
