@@ -2,7 +2,7 @@
 ## SHEPHERD'S LEDGER
 ### *members:*   
 - CARL FRANCOISE A. CABAS
-- Michael James N. Catubig   
+- MICHAEL JAMES N. CATUBIG   
 - LAURENZ MESIAH A. PALANAS
 
 
