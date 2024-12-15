@@ -23,7 +23,7 @@ const BudgetCard = ({ budget, expenses }) => {
   const closeModal = () => setIsModalOpen(false);
 
   return (
-    <div className="border-2 border-dashed border-gray-300 p-4 rounded-lg w-72">
+    <div className="border-2 border-dashed border-gray-300 p-4 rounded-lg w-96">
       <div className="flex justify-between mb-2">
         <span className="font-medium">{budget_name}</span>
         <span className="font-medium">{formatCurrency(amount)}</span>
