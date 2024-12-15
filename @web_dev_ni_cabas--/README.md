@@ -59,7 +59,7 @@ npm install @fortawesome/fontawesome-free
 
 
 
-### PACKAGES
+# PACKAGES
 =======
 ### prop-types
 - validate the types of props passed to a component. used for login, register, edit profile, etc.
