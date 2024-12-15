@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
-import { useCurrency } from '../../context/CurrencyContext';
+import React, { useState, useEffect } from "react";
+import { useCurrency } from "../../context/CurrencyContext";
 
 const EditBudgetModal = ({ budget, onClose, onEdit }) => {
   const { currency } = useCurrency();
@@ -10,13 +9,7 @@ const EditBudgetModal = ({ budget, onClose, onEdit }) => {
   });
 
   // Predefined categories
-  const categories = [
-    'Food',
-    'Travel',
-    'Shopping',
-    'Entertainment',
-    'Health'
-  ];
+  const categories = ["Food", "Travel", "Shopping", "Entertainment", "Health"];
 
   useEffect(() => {
     setBudgetData({
@@ -32,16 +25,22 @@ const EditBudgetModal = ({ budget, onClose, onEdit }) => {
       ...budgetData,
       budgeted: parseFloat(budgetData.budgeted),
       amountSpent: budget.amountSpent,
-      remaining: parseFloat(budgetData.budgeted) - budget.amountSpent
+      remaining: parseFloat(budgetData.budgeted) - budget.amountSpent,
     });
     onClose();
   };
 
   return (
     <>
-      <div className="fixed inset-0 bg-black bg-opacity-50 z-50" onClick={onClose}></div>
-      
-      <div className="fixed inset-0 flex items-center justify-center z-50" onClick={(e) => e.stopPropagation()}>
+      <div
+        className="fixed inset-0 bg-black bg-opacity-50 z-50"
+        onClick={onClose}
+      ></div>
+
+      <div
+        className="fixed inset-0 flex items-center justify-center z-50"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="bg-white rounded-lg p-6 w-[400px] relative">
           <button
             onClick={onClose}
@@ -51,14 +50,16 @@ const EditBudgetModal = ({ budget, onClose, onEdit }) => {
           </button>
 
           <h2 className="text-2xl font-bold text-blue-600 mb-4">Edit Budget</h2>
-          
+
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block text-gray-700 mb-2">Category</label>
               <select
                 className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={budgetData.category}
-                onChange={(e) => setBudgetData({ ...budgetData, category: e.target.value })}
+                onChange={(e) =>
+                  setBudgetData({ ...budgetData, category: e.target.value })
+                }
                 required
               >
                 {categories.map((category) => (
@@ -79,7 +80,9 @@ const EditBudgetModal = ({ budget, onClose, onEdit }) => {
                   type="number"
                   className="w-full pl-8 pr-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={budgetData.budgeted}
-                  onChange={(e) => setBudgetData({ ...budgetData, budgeted: e.target.value })}
+                  onChange={(e) =>
+                    setBudgetData({ ...budgetData, budgeted: e.target.value })
+                  }
                   min="0"
                   step="0.01"
                   required
@@ -100,16 +103,4 @@ const EditBudgetModal = ({ budget, onClose, onEdit }) => {
   );
 };
 
-EditBudgetModal.propTypes = {
-  budget: PropTypes.shape({
-    id: PropTypes.number.isRequired,
-    category: PropTypes.string.isRequired,
-    budgeted: PropTypes.number.isRequired,
-    amountSpent: PropTypes.number.isRequired,
-    remaining: PropTypes.number.isRequired,
-  }).isRequired,
-  onClose: PropTypes.func.isRequired,
-  onEdit: PropTypes.func.isRequired,
-};
-
-export default EditBudgetModal; 
+export default EditBudgetModal;

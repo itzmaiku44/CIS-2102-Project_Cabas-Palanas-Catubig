@@ -10,10 +10,10 @@ const createExpense = async (expenseData) => {
         amount: expenseData.amount,
         expense_name: expenseData.expense_name,
         category: {
-          connect: { id: expenseData.categoryId }, 
+          connect: { id: expenseData.categoryId },
         },
         user: {
-          connect: { id: expenseData.userId }, 
+          connect: { id: expenseData.userId },
         },
       },
     });

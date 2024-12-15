@@ -1,5 +1,4 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React from "react";
 
 const DeleteBudgetModal = ({ budget, onClose, onDelete }) => {
   const handleDelete = () => {
@@ -9,9 +8,15 @@ const DeleteBudgetModal = ({ budget, onClose, onDelete }) => {
 
   return (
     <>
-      <div className="fixed inset-0 bg-black bg-opacity-50 z-50" onClick={onClose}></div>
-      
-      <div className="fixed inset-0 flex items-center justify-center z-50" onClick={(e) => e.stopPropagation()}>
+      <div
+        className="fixed inset-0 bg-black bg-opacity-50 z-50"
+        onClick={onClose}
+      ></div>
+
+      <div
+        className="fixed inset-0 flex items-center justify-center z-50"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="bg-white rounded-lg p-6 w-[400px] relative">
           <button
             onClick={onClose}
@@ -20,10 +25,12 @@ const DeleteBudgetModal = ({ budget, onClose, onDelete }) => {
             <i className="fas fa-times"></i>
           </button>
 
-          <h2 className="text-2xl font-bold text-red-600 mb-4">Delete Budget</h2>
-          
+          <h2 className="text-2xl font-bold text-red-600 mb-4">
+            Delete Budget
+          </h2>
+
           <p className="text-gray-700 mb-6">
-            Are you sure you want to delete the budget for "{budget.category}"? 
+            Are you sure you want to delete the budget for "{budget.category}"?
             This action cannot be undone.
           </p>
 
@@ -47,12 +54,4 @@ const DeleteBudgetModal = ({ budget, onClose, onDelete }) => {
   );
 };
 
-DeleteBudgetModal.propTypes = {
-  budget: PropTypes.shape({
-    category: PropTypes.string.isRequired,
-  }).isRequired,
-  onClose: PropTypes.func.isRequired,
-  onDelete: PropTypes.func.isRequired,
-};
-
-export default DeleteBudgetModal; 
+export default DeleteBudgetModal;

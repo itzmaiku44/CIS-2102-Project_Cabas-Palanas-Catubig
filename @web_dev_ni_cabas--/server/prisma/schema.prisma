@@ -41,3 +41,5 @@ model Budget {
   user      User     @relation(fields: [userId], references: [id])
   expenses Expenses[]
 }
+
+

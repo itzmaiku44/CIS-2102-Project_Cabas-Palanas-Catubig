@@ -73,7 +73,54 @@ const loginController = async (req, res) => {
   }
 };
 
+// Change Password Controller
+const changePasswordController = async (req, res) => {
+  const { oldPassword, newPassword, confirmPassword } = req.body;
+  const userId = req.user.id; // Assume user ID is available in req.user (after authentication)
+
+  // Validate input
+  if (!oldPassword || !newPassword || !confirmPassword) {
+    return res
+      .status(400)
+      .json({ message: "Please provide all required fields." });
+  }
+
+  if (newPassword !== confirmPassword) {
+    return res
+      .status(400)
+      .json({ message: "New password and confirm password do not match." });
+  }
+
+  if (newPassword.length < 8) {
+    return res
+      .status(400)
+      .json({ message: "Password must be at least 8 characters long." });
+  }
+
+  try {
+    // Call service to change the password
+    const result = await changePasswordService.changePassword(
+      userId,
+      oldPassword,
+      newPassword
+    );
+
+    // If password is successfully changed, respond with success message
+    if (result.success) {
+      return res
+        .status(200)
+        .json({ message: "Password changed successfully." });
+    } else {
+      return res.status(400).json({ message: result.message });
+    }
+  } catch (error) {
+    console.error("Error changing password:", error);
+    return res.status(500).json({ message: "Internal server error." });
+  }
+};
+
 module.exports = {
   registerController,
   loginController,
+  changePasswordController,
 };

@@ -1,12 +1,11 @@
-import React, { useState } from 'react';
-import PropTypes from 'prop-types';
+import React, { useState } from "react";
 
 const AddExpensesModal = ({ onClose, onAdd, budgets }) => {
   const [expenseData, setExpenseData] = useState({
-    name: '',
-    amount: '',
-    date: new Date().toISOString().split('T')[0],
-    budget: '',
+    name: "",
+    amount: "",
+    date: new Date().toISOString().split("T")[0],
+    budget: "",
   });
 
   const handleSubmit = (e) => {
@@ -20,9 +19,15 @@ const AddExpensesModal = ({ onClose, onAdd, budgets }) => {
 
   return (
     <>
-      <div className="fixed inset-0 bg-black bg-opacity-50 z-50" onClick={onClose}></div>
-      
-      <div className="fixed inset-0 flex items-center justify-center z-50" onClick={(e) => e.stopPropagation()}>
+      <div
+        className="fixed inset-0 bg-black bg-opacity-50 z-50"
+        onClick={onClose}
+      ></div>
+
+      <div
+        className="fixed inset-0 flex items-center justify-center z-50"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="bg-white rounded-lg p-6 w-[400px] relative">
           <button
             onClick={onClose}
@@ -31,8 +36,10 @@ const AddExpensesModal = ({ onClose, onAdd, budgets }) => {
             <i className="fas fa-times"></i>
           </button>
 
-          <h2 className="text-2xl font-bold text-blue-600 mb-4">Add New Expense</h2>
-          
+          <h2 className="text-2xl font-bold text-blue-600 mb-4">
+            Add New Expense
+          </h2>
+
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block text-gray-700 mb-2">Expense Name</label>
@@ -40,7 +47,9 @@ const AddExpensesModal = ({ onClose, onAdd, budgets }) => {
                 type="text"
                 className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={expenseData.name}
-                onChange={(e) => setExpenseData({ ...expenseData, name: e.target.value })}
+                onChange={(e) =>
+                  setExpenseData({ ...expenseData, name: e.target.value })
+                }
                 required
               />
             </div>
@@ -51,7 +60,9 @@ const AddExpensesModal = ({ onClose, onAdd, budgets }) => {
                 type="number"
                 className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={expenseData.amount}
-                onChange={(e) => setExpenseData({ ...expenseData, amount: e.target.value })}
+                onChange={(e) =>
+                  setExpenseData({ ...expenseData, amount: e.target.value })
+                }
                 min="0"
                 step="0.01"
                 required
@@ -64,17 +75,23 @@ const AddExpensesModal = ({ onClose, onAdd, budgets }) => {
                 type="date"
                 className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={expenseData.date}
-                onChange={(e) => setExpenseData({ ...expenseData, date: e.target.value })}
+                onChange={(e) =>
+                  setExpenseData({ ...expenseData, date: e.target.value })
+                }
                 required
               />
             </div>
 
             <div>
-              <label className="block text-gray-700 mb-2">Budget Category</label>
+              <label className="block text-gray-700 mb-2">
+                Budget Category
+              </label>
               <select
                 className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={expenseData.budget}
-                onChange={(e) => setExpenseData({ ...expenseData, budget: e.target.value })}
+                onChange={(e) =>
+                  setExpenseData({ ...expenseData, budget: e.target.value })
+                }
                 required
               >
                 <option value="">Select a budget category</option>
@@ -99,14 +116,4 @@ const AddExpensesModal = ({ onClose, onAdd, budgets }) => {
   );
 };
 
-AddExpensesModal.propTypes = {
-  onClose: PropTypes.func.isRequired,
-  onAdd: PropTypes.func.isRequired,
-  budgets: PropTypes.arrayOf(
-    PropTypes.shape({
-      category: PropTypes.string.isRequired,
-    })
-  ).isRequired,
-};
-
-export default AddExpensesModal; 
+export default AddExpensesModal;

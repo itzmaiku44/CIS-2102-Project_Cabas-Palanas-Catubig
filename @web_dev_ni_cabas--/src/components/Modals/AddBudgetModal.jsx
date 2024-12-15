@@ -1,23 +1,16 @@
-import React, { useState } from 'react';
-import PropTypes from 'prop-types';
-import { useCurrency } from '../../context/CurrencyContext';
+import React, { useState } from "react";
+import { useCurrency } from "../../context/CurrencyContext";
 
 const AddBudgetModal = ({ onClose, onAdd }) => {
   const { currency } = useCurrency();
   const [budgetData, setBudgetData] = useState({
-    category: '',
-    budgeted: '',
+    category: "",
+    budgeted: "",
     amountSpent: 0,
   });
 
   // Predefined categories
-  const categories = [
-    'Food',
-    'Travel',
-    'Shopping',
-    'Entertainment',
-    'Health'
-  ];
+  const categories = ["Food", "Travel", "Shopping", "Entertainment", "Health"];
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -25,16 +18,22 @@ const AddBudgetModal = ({ onClose, onAdd }) => {
       ...budgetData,
       budgeted: parseFloat(budgetData.budgeted),
       amountSpent: 0,
-      remaining: parseFloat(budgetData.budgeted) // Initial remaining is full budget amount
+      remaining: parseFloat(budgetData.budgeted), // Initial remaining is full budget amount
     });
     onClose();
   };
 
   return (
     <>
-      <div className="fixed inset-0 bg-black bg-opacity-50 z-50" onClick={onClose}></div>
-      
-      <div className="fixed inset-0 flex items-center justify-center z-50" onClick={(e) => e.stopPropagation()}>
+      <div
+        className="fixed inset-0 bg-black bg-opacity-50 z-50"
+        onClick={onClose}
+      ></div>
+
+      <div
+        className="fixed inset-0 flex items-center justify-center z-50"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="bg-white rounded-lg p-6 w-[400px] relative">
           <button
             onClick={onClose}
@@ -43,15 +42,19 @@ const AddBudgetModal = ({ onClose, onAdd }) => {
             <i className="fas fa-times"></i>
           </button>
 
-          <h2 className="text-2xl font-bold text-blue-600 mb-4">Add New Budget</h2>
-          
+          <h2 className="text-2xl font-bold text-blue-600 mb-4">
+            Add New Budget
+          </h2>
+
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block text-gray-700 mb-2">Category</label>
               <select
                 className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={budgetData.category}
-                onChange={(e) => setBudgetData({ ...budgetData, category: e.target.value })}
+                onChange={(e) =>
+                  setBudgetData({ ...budgetData, category: e.target.value })
+                }
                 required
               >
                 <option value="">Select a category</option>
@@ -73,7 +76,9 @@ const AddBudgetModal = ({ onClose, onAdd }) => {
                   type="number"
                   className="w-full pl-8 pr-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={budgetData.budgeted}
-                  onChange={(e) => setBudgetData({ ...budgetData, budgeted: e.target.value })}
+                  onChange={(e) =>
+                    setBudgetData({ ...budgetData, budgeted: e.target.value })
+                  }
                   min="0"
                   step="0.01"
                   required
@@ -94,9 +99,4 @@ const AddBudgetModal = ({ onClose, onAdd }) => {
   );
 };
 
-AddBudgetModal.propTypes = {
-  onClose: PropTypes.func.isRequired,
-  onAdd: PropTypes.func.isRequired,
-};
-
-export default AddBudgetModal; 
+export default AddBudgetModal;

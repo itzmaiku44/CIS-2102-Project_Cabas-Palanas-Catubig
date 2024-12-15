@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
-import PropTypes from 'prop-types';
-import { useCurrency, currencies } from '../../context/CurrencyContext';
+import React, { useState } from "react";
+import { useCurrency, currencies } from "../../context/CurrencyContext";
 
 const SettingsModal = ({ onClose }) => {
   const { currency, setCurrency } = useCurrency();
@@ -13,28 +12,50 @@ const SettingsModal = ({ onClose }) => {
 
   const handleSave = () => {
     // Save settings to localStorage or your preferred storage method
-    localStorage.setItem('settings', JSON.stringify({
-      darkMode,
-      notifications,
-      currency: currency.code
-    }));
-    
+    localStorage.setItem(
+      "settings",
+      JSON.stringify({
+        darkMode,
+        notifications,
+        currency: currency.code,
+      })
+    );
+
     // Close the modal after saving
     onClose();
   };
 
   return (
     <>
-      <div className="fixed inset-0 bg-black bg-opacity-50 z-50" onClick={onClose}></div>
-      
-      <div className="fixed inset-0 flex items-center justify-center z-50" onClick={(e) => e.stopPropagation()}>
-        <div className={`${darkMode ? 'bg-gray-800' : 'bg-[#FFF5F1]'} rounded-lg p-6 w-[400px] relative`}>
-          <button
-            onClick={onClose}
-            className="absolute top-4 right-4"
-          >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <div
+        className="fixed inset-0 bg-black bg-opacity-50 z-50"
+        onClick={onClose}
+      ></div>
+
+      <div
+        className="fixed inset-0 flex items-center justify-center z-50"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div
+          className={`${
+            darkMode ? "bg-gray-800" : "bg-[#FFF5F1]"
+          } rounded-lg p-6 w-[400px] relative`}
+        >
+          <button onClick={onClose} className="absolute top-4 right-4">
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M18 6L6 18M6 6L18 18"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
             </svg>
           </button>
 
@@ -67,7 +88,9 @@ const SettingsModal = ({ onClose }) => {
           </div>
 
           <div className="mb-6">
-            <label className="block text-blue-600 font-medium mb-2">Currency</label>
+            <label className="block text-blue-600 font-medium mb-2">
+              Currency
+            </label>
             <select
               className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
               value={currency.code}
@@ -81,7 +104,7 @@ const SettingsModal = ({ onClose }) => {
             </select>
           </div>
 
-          <button 
+          <button
             onClick={handleSave}
             className="w-full bg-blue-600 text-white py-3 rounded-md hover:bg-blue-700 transition-colors"
           >
@@ -93,8 +116,4 @@ const SettingsModal = ({ onClose }) => {
   );
 };
 
-SettingsModal.propTypes = {
-  onClose: PropTypes.func.isRequired,
-};
-
-export default SettingsModal; 
+export default SettingsModal;
