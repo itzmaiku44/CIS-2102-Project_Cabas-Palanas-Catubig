@@ -56,8 +56,10 @@ npm install @fortawesome/fontawesome-free
 @tailwind utilities;
 ```
 
-
-
+</br>
+</br>
+</br>
+</br>
 
 # PACKAGES
 =======
