@@ -1,4 +1,4 @@
-###Step 1: Set Up the Server Folder
+### Step 1: Set Up the Server Folder
 Navigate to the server folder:
 
 cd server
@@ -12,7 +12,7 @@ npm install bcrypt
 npm install express-validator
 npm install cors
 ```
-###Step 2: Set Up Prisma
+### Step 2: Set Up Prisma
 Install Prisma as a development dependency:
 ```
 npm install prisma --save-dev
