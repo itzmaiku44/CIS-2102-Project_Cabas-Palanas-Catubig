@@ -62,15 +62,7 @@ npm install @fortawesome/fontawesome-free
 </br>
 </br>
 
-<<<<<<< HEAD
-
-# <<<<<<< HEAD
-
-=======
-
-### PACKAGES
-
-=======
+# PACKAGES
 
 > > > > > > > c9b1a4fcd14d4d5570c206dee5786f2558808310
 
@@ -97,16 +89,18 @@ npm install react-router-dom
 npm install zustand
 ```
 
-### dummy account
+### test dummy account
 
 ```
 user email: testuser@example.com
 user password: TestPassword123
-
+```
 
 ## Pie Chart
 
 npm install chart.js react-chartjs-2
 ```
 
+```
 npm install lucide-react
+```
