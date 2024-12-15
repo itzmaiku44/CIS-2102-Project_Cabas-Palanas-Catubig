@@ -42,7 +42,9 @@ module.exports = {
 ### FontAwesome ICONS
 
 - Command in terminal
-  `npm install @fortawesome/fontawesome-free`
+```
+npm install @fortawesome/fontawesome-free
+```
 - Add the CSS Import in \*.css file/s: `@import "@fortawesome/fontawesome-free/css/all.min.css";`
   css file should look like this:
 
@@ -64,19 +66,23 @@ npm install prop-types
 >>>>>>> fdf11c41b6219bf7463bc48d1e11fabb509117ae
 
 ### Routers
-
+```
 npm install react-router-dom
+```
 
 ### State management
-
+```
 npm install zustand
+```
 
 ### dummy account
-
+```
 user email: testuser@example.com
 user password: TestPassword123
+```
 
 
 ## Pie Chart
-
-npm install chart.js react-chartjs-2 
+```
+npm install chart.js react-chartjs-2
+```
