@@ -63,7 +63,7 @@ const BudgetCarousel = () => {
   return (
     <div className="mb-8">
       <div className="relative">
-        <div className="flex gap-4 overflow-x-auto pb-4">
+        <div className="flex gap-4 overflow-x-auto pb-4 place-content-evenly">
           <button
             onClick={handlePrev}
             className="absolute left-0 top-1/2 -translate-y-1/2 bg-gray-200 p-2 rounded-full"

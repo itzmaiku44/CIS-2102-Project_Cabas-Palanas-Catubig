@@ -62,15 +62,7 @@ npm install @fortawesome/fontawesome-free
 </br>
 </br>
 
-<<<<<<< HEAD
-
-# <<<<<<< HEAD
-
-=======
-
-### PACKAGES
-
-=======
+# PACKAGES
 
 > > > > > > > c9b1a4fcd14d4d5570c206dee5786f2558808310
 
@@ -97,16 +89,64 @@ npm install react-router-dom
 npm install zustand
 ```
 
-### dummy account
+### test dummy account
 
 ```
 user email: testuser@example.com
 user password: TestPassword123
-
+```
 
 ## Pie Chart
-
+```
 npm install chart.js react-chartjs-2
 ```
 
+## Sidebar
+```
 npm install lucide-react
+```
+</br>
+
+# BACKEND SERVER 
+
+### Step 1: Set Up the Server Folder
+Navigate to the server folder:
+
+cd server
+Install dependencies:
+
+npm install
+Install necessary packages:
+```
+npm install express
+npm install bcrypt
+npm install express-validator
+npm install cors
+```
+### Step 2: Set Up Prisma
+Install Prisma as a development dependency:
+```
+npm install prisma --save-dev
+```
+Initialize Prisma:
+```
+npx prisma init
+```
+If editing the schema, run the following to migrate the schema:
+```
+npx prisma migrate dev --name <migration_name>
+```
+Generate Prisma client:
+```
+npx prisma generate
+```
+Deploy the migrations or start Prisma Studio:
+
+To deploy migrations:
+```
+npx prisma migrate deploy
+```
+To open Prisma Studio:
+```
+npx prisma studio
+```

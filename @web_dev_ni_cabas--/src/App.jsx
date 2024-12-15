@@ -19,7 +19,7 @@ const ProtectedRoute = ({ children }) => {
 };
 
 // 404 Page Component
-const NotFound = () => <div>404: Page Not Found</div>;
+const NotFound = () => <div className="font-extrabold text-6xl text-center mt-48"><i class="fa-solid fa-ban mb-6"></i><br></br>404: Page Not Found</div>;
 
 const App = () => {
   return (

@@ -26,7 +26,7 @@ const Dashboard = () => {
     <div className="flex h-screen bg-gray-100">
       <Sidebar />
       {/* Main Content */}
-      <div className="w-5/6 p-6">
+      <div className="w-full p-12">
         {/* Header */}
         <h1 className="text-2xl font-bold mb-4">Welcome, {user.name}</h1>
 

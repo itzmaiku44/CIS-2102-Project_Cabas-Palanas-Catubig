@@ -41,7 +41,7 @@ const ExpensesTable = () => {
         <table className="w-full">
           <thead>
             <tr className="text-left">
-              <th className="pb-2">Expenses</th>
+              <th className="pb-2 pl-16">Expenses</th>
               <th className="pb-2">Amount</th>
               <th className="pb-2">Date</th>
               <th className="pb-2">Budget Category</th>
@@ -59,9 +59,9 @@ const ExpensesTable = () => {
                   key={expense.id} // Using expense ID as key
                   className={index % 2 === 1 ? "bg-blue-600 text-white" : ""}
                 >
-                  <td className="py-2">{expense.expense_name}</td>
-                  <td className="py-2">₱{expense.amount.toFixed(2)}</td>
-                  <td className="py-2">
+                  <td className="py-2 pl-10 font-medium">{expense.expense_name}</td>
+                  <td className="py-2 font-medium">₱{expense.amount.toFixed(2)}</td>
+                  <td className="py-2 font-medium">
                     {new Date(expense.createdAt).toLocaleDateString()}
                   </td>
                   <td className="py-2">
