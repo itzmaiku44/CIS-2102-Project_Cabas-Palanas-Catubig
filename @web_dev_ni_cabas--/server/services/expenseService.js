@@ -54,6 +54,9 @@ const getExpenseById = async (id) => {
 const updateExpense = async (id, updatedData) => {
   try {
     const existingExpense = await findExpense(id);
+    if (updatedData.categoryId) {
+      updatedData.categoryId = parseInt(updatedData.categoryId);
+    }
 
     if (!existingExpense) return null;
 

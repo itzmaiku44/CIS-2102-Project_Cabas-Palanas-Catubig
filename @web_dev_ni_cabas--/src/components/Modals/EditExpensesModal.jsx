@@ -1,247 +1,125 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { X, SquarePen } from "lucide-react";
+import { updateExpense } from "../../store/expensesApi";
 import ErrorMessage from "../shared/ErrorMessage";
-import LoadingSpinner from "../shared/LoadingSpinner";
 
-const EditProfileModal = ({ profileData, setProfileData, onClose }) => {
-  const [formData, setFormData] = useState(profileData);
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [errors, setErrors] = useState({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [saveSuccess, setSaveSuccess] = useState(false);
+const EditExpenseModal = ({ expense, budgets, onClose, onSave }) => {
+  console.log("inside edit expense:", expense);
+  console.log("inside edit expenses:", budgets);
+  const [formData, setFormData] = useState({
+    name: expense?.expense_name || "",
+    amount: expense?.amount || "",
+    categoryId: expense?.categoryId || "",
+  });
+  const [error, setError] = useState("");
 
-  const validateForm = () => {
-    const newErrors = {};
-
-    // Name validation
-    if (!formData.name.trim()) {
-      newErrors.name = "Name is required";
-    }
-
-    // Email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(formData.email)) {
-      newErrors.email = "Please enter a valid email address";
-    }
-
-    // Password validation
-    if (formData.password) {
-      const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
-      if (!passwordRegex.test(formData.password)) {
-        newErrors.password =
-          "Password must be at least 8 characters with 1 uppercase, 1 lowercase, and 1 number";
-      }
-      if (formData.password !== confirmPassword) {
-        newErrors.confirmPassword = "Passwords do not match";
-      }
-    }
-
-    // Birthdate validation
-    if (!formData.birthdate) {
-      newErrors.birthdate = "Birthdate is required";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleImageUpload = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        setFormData((prev) => ({
-          ...prev,
-          image: reader.result,
-        }));
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleInputChange = (e) => {
+  // Handle form data changes
+  const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
-    // Clear error when user starts typing
-    if (errors[name]) {
-      setErrors((prev) => ({
-        ...prev,
-        [name]: "",
-      }));
-    }
   };
 
-  const handleSubmit = async () => {
-    if (validateForm()) {
-      setIsSubmitting(true);
-      try {
-        // Simulate API call
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-        setProfileData(formData);
-        setSaveSuccess(true);
-        setTimeout(() => {
-          onClose();
-        }, 500);
-      } catch (error) {
-        setErrors({ submit: "Failed to save changes" });
-      } finally {
-        setIsSubmitting(false);
-      }
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    console.log("inside handleSubmit", formData);
+
+    // Prepare the updated expense data, including the expense ID
+    const updatedExpenseData = {
+      expense_name: formData.name,
+      amount: parseFloat(formData.amount),
+      categoryId: parseInt(formData.categoryId),
+    };
+    console.log("updated expense data", updatedExpenseData);
+
+    try {
+      const updatedExpense = await updateExpense(
+        expense.id,
+        updatedExpenseData
+      );
+
+      // Pass the updated expense data back to the parent component
+      onSave(updatedExpense);
+      onClose();
+    } catch (err) {
+      setError("Failed to update expense");
     }
   };
 
   return (
-    <>
-      {/* Modal Overlay */}
-      <div
-        className="fixed inset-0 bg-black bg-opacity-50 z-[60]"
-        onClick={onClose}
-      ></div>
-
-      {/* Modal Content */}
-      <div
-        className="fixed inset-0 flex items-center justify-center z-[60]"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div
-          className={`bg-[#f8ebe2] rounded-lg p-6 w-[600px] relative transform transition-all duration-300 ${
-            saveSuccess ? "scale-95 opacity-0" : "scale-100 opacity-100"
-          }`}
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+      <div className="bg-white rounded-lg p-6 w-96 relative border-2 border-dashed border-gray-300">
+        <button
+          onClick={onClose}
+          className="absolute right-2 top-2 text-red-500 hover:text-red-700"
         >
-          {/* Close Button */}
-          <button
-            onClick={onClose}
-            className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-2 text-lg"
-          >
-            <i className="fas fa-times"></i>
-          </button>
+          <X size={20} />
+        </button>
 
-          <h2 className="text-2xl font-bold text-blue-600 mb-6">
-            Edit Profile
-          </h2>
+        <h2 className="text-2xl font-bold text-blue-600 mb-6">Edit Expense</h2>
 
-          <div className="flex">
-            {/* Form Fields */}
-            <div className="flex-grow pr-4">
-              <FormField
-                label="Name"
-                name="name"
+        {/* Use ErrorMessage component for error handling */}
+        <ErrorMessage message={error} />
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="flex gap-4">
+            <div className="flex-1">
+              <label className="block text-blue-600 font-medium">
+                Expense Name
+              </label>
+              <input
                 type="text"
+                name="name"
                 value={formData.name}
-                onChange={handleInputChange}
-                error={errors.name}
-              />
-              <FormField
-                label="Email"
-                name="email"
-                type="email"
-                value={formData.email}
-                onChange={handleInputChange}
-                error={errors.email}
-              />
-              <FormField
-                label="Birthdate"
-                name="birthdate"
-                type="date"
-                value={formData.birthdate}
-                onChange={handleInputChange}
-                error={errors.birthdate}
-              />
-              <FormField
-                label="Password"
-                name="password"
-                type="password"
-                value={formData.password}
-                onChange={handleInputChange}
-                error={errors.password}
-              />
-              <FormField
-                label="Confirm Password"
-                name="confirmPassword"
-                type="password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                error={errors.confirmPassword}
+                onChange={handleChange}
+                className="w-full border border-gray-300 rounded p-2 mt-1"
+                placeholder="Expense Name"
               />
             </div>
 
-            {/* Profile Image Upload */}
-            <div
-              className={`w-48 h-48 bg-gray-200 rounded-full overflow-hidden flex items-center justify-center border-2 border-gray-300 relative transition-all duration-300 ${
-                isSubmitting ? "opacity-50" : "opacity-100"
-              }`}
-            >
-              {formData.image ? (
-                <img
-                  src={formData.image}
-                  alt="Profile"
-                  className="w-full h-full object-cover transition-opacity duration-300"
-                />
-              ) : (
-                <span className="text-gray-500">No Image</span>
-              )}
+            <div className="flex-1">
+              <label className="block text-blue-600 font-medium">Amount</label>
               <input
-                type="file"
-                accept="image/*"
-                className="absolute inset-0 opacity-0 cursor-pointer"
-                onChange={handleImageUpload}
-                disabled={isSubmitting}
+                type="number"
+                name="amount"
+                value={formData.amount}
+                onChange={handleChange}
+                className="w-full border border-gray-300 rounded p-2 mt-1"
+                placeholder="Amount"
               />
             </div>
           </div>
 
-          <button
-            onClick={handleSubmit}
-            disabled={isSubmitting}
-            className={`mt-4 w-full rounded p-2 transition-all duration-300 flex items-center justify-center
-              ${isSubmitting ? "bg-blue-400" : "bg-blue-500 hover:bg-blue-600"}
-              ${saveSuccess ? "bg-green-500" : ""}
-            `}
-          >
-            {isSubmitting ? (
-              <>
-                <LoadingSpinner size="small" light />
-                <span className="ml-2 text-white">Saving...</span>
-              </>
-            ) : saveSuccess ? (
-              <>
-                <i className="fas fa-check mr-2"></i>
-                <span className="text-white">Saved!</span>
-              </>
-            ) : (
-              <span className="text-white">Save Changes</span>
-            )}
-          </button>
+          {/* Category field */}
+          <div>
+            <label className="block text-blue-600 font-medium">Category</label>
+            <select
+              name="categoryId"
+              value={formData.categoryId}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded p-2 mt-1"
+            >
+              {budgets?.map((category) => (
+                <option key={category.id} value={category.id}>
+                  {category.budget_name}
+                </option>
+              ))}
+            </select>
+          </div>
 
-          {errors.submit && (
-            <div className="mt-2">
-              <ErrorMessage message={errors.submit} />
-            </div>
-          )}
-        </div>
+          <button
+            type="submit"
+            className="w-full bg-yellow-400 hover:bg-yellow-500 text-white font-bold py-2 px-4 rounded flex items-center justify-center gap-2"
+          >
+            Edit Expense
+            <SquarePen size={16} />
+          </button>
+        </form>
       </div>
-    </>
+    </div>
   );
 };
 
-// Helper component for form fields
-const FormField = ({ label, name, type, value, onChange, error }) => (
-  <div className="mb-4">
-    <label className="block text-blue-600 mb-2">{label}</label>
-    <input
-      type={type}
-      name={name}
-      value={value}
-      onChange={onChange}
-      className={`w-full border rounded p-2 ${
-        error ? "border-red-500" : "border-gray-300"
-      }`}
-      placeholder={`Enter your ${label.toLowerCase()}`}
-    />
-    <ErrorMessage message={error} />
-  </div>
-);
-
-export default EditProfileModal;
+export default EditExpenseModal;

@@ -9,3 +9,5 @@ router.post("/login", user.loginController);
 router.patch("/changePassword", validateToken, user.updateProfileController);
 
 module.exports = router;
+
+//sir for some reason dili mo gana ang api endpoint na /changeProfile. sa /changePassword ra sa siya mugana

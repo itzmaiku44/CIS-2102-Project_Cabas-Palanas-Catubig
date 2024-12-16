@@ -1,14 +1,8 @@
 import React, { useState } from "react";
-import { useCurrency, currencies } from "../../context/CurrencyContext";
 
 const SettingsModal = ({ onClose }) => {
-  const { currency, setCurrency } = useCurrency();
   const [darkMode, setDarkMode] = useState(false);
   const [notifications, setNotifications] = useState(true);
-
-  const handleCurrencyChange = (e) => {
-    setCurrency(currencies[e.target.value]);
-  };
 
   const handleSave = () => {
     // Save settings to localStorage or your preferred storage method
@@ -17,7 +11,6 @@ const SettingsModal = ({ onClose }) => {
       JSON.stringify({
         darkMode,
         notifications,
-        currency: currency.code,
       })
     );
 
@@ -75,7 +68,7 @@ const SettingsModal = ({ onClose }) => {
           </div>
 
           <div className="flex items-center justify-between mb-6">
-            <span className="text-blue-600 font-medium">notification</span>
+            <span className="text-blue-600 font-medium">Notifications</span>
             <label className="relative inline-flex items-center cursor-pointer">
               <input
                 type="checkbox"
@@ -85,23 +78,6 @@ const SettingsModal = ({ onClose }) => {
               />
               <div className="w-12 h-6 bg-gray-300 rounded-full peer peer-checked:bg-blue-600 after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-6"></div>
             </label>
-          </div>
-
-          <div className="mb-6">
-            <label className="block text-blue-600 font-medium mb-2">
-              Currency
-            </label>
-            <select
-              className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-              value={currency.code}
-              onChange={handleCurrencyChange}
-            >
-              {Object.entries(currencies).map(([code, { symbol }]) => (
-                <option key={code} value={code}>
-                  {code} ({symbol})
-                </option>
-              ))}
-            </select>
           </div>
 
           <button

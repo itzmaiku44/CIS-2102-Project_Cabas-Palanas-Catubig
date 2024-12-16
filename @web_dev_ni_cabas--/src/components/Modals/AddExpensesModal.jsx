@@ -1,119 +1,144 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { X, Plus } from "lucide-react";
+import ErrorMessage from "../shared/ErrorMessage";
+import { addExpense } from "../../store/expensesApi";
+import { fetchBudgets } from "../../store/budgetApi";
 
-const AddExpensesModal = ({ onClose, onAdd, budgets }) => {
-  const [expenseData, setExpenseData] = useState({
+const AddExpenseModal = ({ onClose, onSave }) => {
+  const [formData, setFormData] = useState({
     name: "",
     amount: "",
-    date: new Date().toISOString().split("T")[0],
-    budget: "",
+    categoryId: "",
   });
+  const [error, setError] = useState("");
+  const [budgets, setBudgets] = useState([]);
 
-  const handleSubmit = (e) => {
+  useEffect(() => {
+    const loadBudgets = async () => {
+      try {
+        const budgetData = await fetchBudgets();
+        setBudgets(budgetData);
+      } catch (err) {
+        console.error("Error loading budgets:", err.message);
+        setError("Failed to load categories.");
+      }
+    };
+
+    loadBudgets();
+  }, []);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onAdd({
-      ...expenseData,
-      amount: parseFloat(expenseData.amount),
-    });
-    onClose();
+
+    if (!formData.name || !formData.amount || !formData.categoryId) {
+      setError("Please fill in all fields");
+      return;
+    }
+
+    const newExpenseData = {
+      expense_name: formData.name,
+      amount: parseFloat(formData.amount),
+      categoryId: parseInt(formData.categoryId),
+    };
+
+    try {
+      // Assuming addExpense API is successful, send new expense data to parent
+      await addExpense(newExpenseData);
+      onSave(newExpenseData); // Call onSave with the new expense
+      onClose(); // Close the modal
+    } catch (err) {
+      setError(err.message || "Failed to add expense");
+    }
   };
 
   return (
-    <>
-      <div
-        className="fixed inset-0 bg-black bg-opacity-50 z-50"
-        onClick={onClose}
-      ></div>
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+      <div className="bg-white rounded-lg p-6 w-96 relative border-2 border-dashed border-gray-300">
+        <button
+          onClick={onClose}
+          className="absolute right-2 top-2 text-red-500 hover:text-red-700"
+        >
+          <X size={20} />
+        </button>
 
-      <div
-        className="fixed inset-0 flex items-center justify-center z-50"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="bg-white rounded-lg p-6 w-[400px] relative">
-          <button
-            onClick={onClose}
-            className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-2 text-lg"
-          >
-            <i className="fas fa-times"></i>
-          </button>
+        <h2 className="text-2xl font-bold text-blue-600 mb-6">
+          Add New Expense
+        </h2>
 
-          <h2 className="text-2xl font-bold text-blue-600 mb-4">
-            Add New Expense
-          </h2>
+        <ErrorMessage message={error} />
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block text-gray-700 mb-2">Expense Name</label>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="flex gap-4">
+            <div className="flex-1">
+              <label className="block text-blue-600 font-medium">
+                Expense Name
+              </label>
               <input
                 type="text"
-                className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={expenseData.name}
-                onChange={(e) =>
-                  setExpenseData({ ...expenseData, name: e.target.value })
-                }
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                className="w-full border border-gray-300 rounded p-2 mt-1"
+                placeholder="Expense Name"
                 required
               />
             </div>
 
-            <div>
-              <label className="block text-gray-700 mb-2">Amount</label>
+            <div className="flex-1">
+              <label className="block text-blue-600 font-medium">Amount</label>
               <input
                 type="number"
-                className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={expenseData.amount}
-                onChange={(e) =>
-                  setExpenseData({ ...expenseData, amount: e.target.value })
-                }
-                min="0"
-                step="0.01"
+                name="amount"
+                value={formData.amount}
+                onChange={handleChange}
+                className="w-full border border-gray-300 rounded p-2 mt-1"
+                placeholder="Amount"
                 required
               />
             </div>
+          </div>
 
-            <div>
-              <label className="block text-gray-700 mb-2">Date</label>
-              <input
-                type="date"
-                className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={expenseData.date}
-                onChange={(e) =>
-                  setExpenseData({ ...expenseData, date: e.target.value })
-                }
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-gray-700 mb-2">
-                Budget Category
-              </label>
-              <select
-                className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={expenseData.budget}
-                onChange={(e) =>
-                  setExpenseData({ ...expenseData, budget: e.target.value })
-                }
-                required
-              >
-                <option value="">Select a budget category</option>
-                {budgets.map((budget) => (
-                  <option key={budget.category} value={budget.category}>
-                    {budget.category}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <button
-              type="submit"
-              className="w-full p-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+          <div>
+            <label className="block text-blue-600 font-medium">Category</label>
+            <select
+              name="categoryId"
+              value={formData.categoryId}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded p-2 mt-1"
+              required
             >
-              Add Expense
-            </button>
-          </form>
-        </div>
+              <option value="">Select a category</option>
+              {budgets.length === 0 ? (
+                <option disabled>No categories available</option>
+              ) : (
+                budgets.map((category) => (
+                  <option key={category.id} value={category.id}>
+                    {category.budget_name}
+                  </option>
+                ))
+              )}
+            </select>
+          </div>
+
+          <button
+            type="submit"
+            className="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded flex items-center justify-center gap-2"
+          >
+            Add Expense
+            <Plus size={16} />
+          </button>
+        </form>
       </div>
-    </>
+    </div>
   );
 };
 
-export default AddExpensesModal;
+export default AddExpenseModal;

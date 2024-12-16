@@ -11,12 +11,17 @@ import {
   LayoutDashboard,
 } from "lucide-react";
 import ProfileModal from "../Modals/ProfileModal";
+import SettingsModal from "../Modals/SettingsModal";
+import useAuthStore from "../../store/authStore";
 
 const Sidebar = () => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [activeContent, setActiveContent] = useState("");
-  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false); // State to manage modal visibility
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const navigate = useNavigate();
+
+  const { logout } = useAuthStore(); // Access the logout function from Zustand store
 
   const menuItems = [
     {
@@ -24,7 +29,7 @@ const Sidebar = () => {
       label: "Profile",
       onClick: () => {
         setActiveContent("Profile");
-        setIsProfileModalOpen(true); // Open the Profile Modal
+        setIsProfileModalOpen(true);
       },
     },
     {
@@ -57,12 +62,15 @@ const Sidebar = () => {
     {
       icon: <Settings size={20} />,
       label: "Settings",
-      onClick: () => console.log("Settings clicked"),
+      onClick: () => setIsSettingsModalOpen(true),
     },
     {
       icon: <LogOut size={20} />,
       label: "Logout",
-      onClick: () => console.log("Logout clicked"),
+      onClick: () => {
+        logout();
+        navigate("/");
+      },
     },
   ];
 
@@ -84,16 +92,19 @@ const Sidebar = () => {
     name: "John Doe",
     email: "john.doe@example.com",
     birthdate: "1990-01-01",
-    image: null, // You can add a link to the profile image if available
+    image: null,
   };
 
   const handleProfileModalClose = () => {
-    setIsProfileModalOpen(false); // Close the Profile Modal
+    setIsProfileModalOpen(false);
   };
 
   const handleProfileEdit = () => {
     console.log("Edit Profile clicked");
-    // Handle profile editing logic here
+  };
+
+  const handleSettingsModalClose = () => {
+    setIsSettingsModalOpen(false); // Close the Settings Modal
   };
 
   return (
@@ -148,6 +159,11 @@ const Sidebar = () => {
           onClose={handleProfileModalClose}
           onEdit={handleProfileEdit}
         />
+      )}
+
+      {/* Settings Modal */}
+      {isSettingsModalOpen && (
+        <SettingsModal onClose={handleSettingsModalClose} />
       )}
     </div>
   );

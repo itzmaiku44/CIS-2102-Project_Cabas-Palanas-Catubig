@@ -12,7 +12,9 @@ const createExpenseController = async (req, res) => {
     res.status(201).json(newExpense);
   } catch (error) {
     console.error("Error creating expense:", error.message);
-    res.status(500).json({ error: "Failed to create expense. Please try again later." });
+    res
+      .status(500)
+      .json({ error: "Failed to create expense. Please try again later." });
   }
 };
 
@@ -25,7 +27,9 @@ const getExpenseController = async (req, res) => {
     res.json(expensesList);
   } catch (error) {
     console.error("Error fetching expenses:", error.message);
-    res.status(500).json({ error: "Failed to retrieve expenses. Please try again later." });
+    res
+      .status(500)
+      .json({ error: "Failed to retrieve expenses. Please try again later." });
   }
 };
 
@@ -42,7 +46,9 @@ const getExpenseByIdController = async (req, res) => {
     res.json(expense);
   } catch (error) {
     console.error("Error fetching expense by ID:", error.message);
-    res.status(500).json({ error: "Failed to retrieve expense. Please try again later." });
+    res
+      .status(500)
+      .json({ error: "Failed to retrieve expense. Please try again later." });
   }
 };
 
@@ -51,7 +57,10 @@ const updateExpenseController = async (req, res) => {
     const expenseId = parseInt(req.params.id);
     const updatedExpenseData = req.body;
 
-    const updatedExpense = await expensesService.updateExpense(expenseId, updatedExpenseData);
+    const updatedExpense = await expensesService.updateExpense(
+      expenseId,
+      updatedExpenseData
+    );
 
     if (!updatedExpense) {
       return res.status(404).json({ error: "Expense not found" });
@@ -60,7 +69,9 @@ const updateExpenseController = async (req, res) => {
     res.json(updatedExpense);
   } catch (error) {
     console.error("Error updating expense:", error.message);
-    res.status(500).json({ error: "Failed to update expense. Please try again later." });
+    res
+      .status(500)
+      .json({ error: "Failed to update expense. Please try again later." });
   }
 };
 
@@ -77,7 +88,9 @@ const deleteExpenseController = async (req, res) => {
     res.json(deletedExpense);
   } catch (error) {
     console.error("Error deleting expense:", error.message);
-    res.status(500).json({ error: "Failed to delete expense. Please try again later." });
+    res
+      .status(500)
+      .json({ error: "Failed to delete expense. Please try again later." });
   }
 };
 

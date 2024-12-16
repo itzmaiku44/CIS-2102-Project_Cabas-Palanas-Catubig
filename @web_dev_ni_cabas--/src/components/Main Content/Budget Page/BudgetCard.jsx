@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import ViewDetailsModal from "../../Modals/ViewDetailsModal"; // Import the ExpenseModal component
 
-const BudgetCard = ({ budget, expenses }) => {
+const BudgetListCard = ({ budget, expenses }) => {
   const { budget_name, amount } = budget;
   const moneySpent = expenses.reduce(
     (total, expense) => total + expense.amount,
@@ -67,4 +67,4 @@ const BudgetCard = ({ budget, expenses }) => {
   );
 };
 
-export default BudgetCard;
+export default BudgetListCard;

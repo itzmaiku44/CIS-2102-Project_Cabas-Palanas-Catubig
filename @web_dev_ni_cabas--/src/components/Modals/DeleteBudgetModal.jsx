@@ -30,8 +30,8 @@ const DeleteBudgetModal = ({ budget, onClose, onDelete }) => {
           </h2>
 
           <p className="text-gray-700 mb-6">
-            Are you sure you want to delete the budget for "{budget.category}"?
-            This action cannot be undone.
+            Are you sure you want to delete the budget for "{budget.budget_name}
+            "? This action cannot be undone.
           </p>
 
           <div className="flex justify-end space-x-4">

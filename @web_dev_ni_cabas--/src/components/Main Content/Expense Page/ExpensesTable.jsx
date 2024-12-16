@@ -1,86 +1,196 @@
 import React, { useEffect, useState } from "react";
-import { fetchExpenses } from "../../../store/expensesApi"; // Adjust import path as needed
-import { fetchBudgets } from "../../../store/budgetApi"; // Adjust import path as needed
+import { deleteExpense } from "../../../store/expensesApi";
+import { Trash2 } from "lucide-react";
+import { useLocation } from "react-router-dom";
+import EditExpenseModal from "../../Modals/EditExpensesModal";
+import DeleteExpenseModal from "../../Modals/DeleteExpenseModal";
 
-const ExpensesTable = () => {
-  const [expenses, setExpenses] = useState([]);
-  const [budgets, setBudgets] = useState([]);
-  const [loading, setLoading] = useState(true);
+const ExpensesTable = ({ expenses, budgets, searchTerm }) => {
+  const [filteredExpenses, setFilteredExpenses] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [selectedExpense, setSelectedExpense] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [expenseToDelete, setExpenseToDelete] = useState(null);
 
-  const fetchData = async () => {
+  const location = useLocation();
+
+  useEffect(() => {
+    if (searchTerm) {
+      setFilteredExpenses(
+        expenses.filter((expense) =>
+          expense.expense_name.toLowerCase().includes(searchTerm.toLowerCase())
+        )
+      );
+    } else {
+      setFilteredExpenses(expenses);
+    }
+  }, [searchTerm, expenses]);
+
+  const openEditModal = (expense) => {
+    const budget = budgets.find((b) => b.id === expense.categoryId);
+    setSelectedExpense({
+      ...expense,
+      budgetName: budget?.budget_name || "No Category",
+    });
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedExpense(null);
+  };
+
+  const handleSave = (updatedExpense) => {
+    setFilteredExpenses((prevExpenses) =>
+      prevExpenses.map((expense) =>
+        expense.id === updatedExpense.id ? updatedExpense : expense
+      )
+    );
+    closeModal();
+  };
+
+  const openDeleteModal = (e, expense) => {
+    e.stopPropagation();
+    setExpenseToDelete(expense);
+    setIsDeleteModalOpen(true);
+  };
+
+  const closeDeleteModal = () => {
+    setIsDeleteModalOpen(false);
+    setExpenseToDelete(null);
+  };
+
+  const handleDelete = async (expense) => {
     try {
-      // Fetch both budgets and expenses
-      const budgetData = await fetchBudgets(); // Fetch budgets
-      setBudgets(budgetData); // Set the budgets state
-
-      const expensesData = await fetchExpenses(); // Fetch expenses
-      setExpenses(expensesData); // Set the expenses state
+      await deleteExpense(expense.id);
+      setFilteredExpenses((prevExpenses) =>
+        prevExpenses.filter((exp) => exp.id !== expense.id)
+      );
+      closeDeleteModal();
     } catch (err) {
-      setError(err.message); // Handle errors if the request fails
-    } finally {
-      setLoading(false); // Set loading to false when done
+      setError("Failed to delete expense");
     }
   };
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  if (error) {
-    return <div>Error: {error}</div>;
-  }
+  const tableClasses = "w-full table-fixed border-separate border-spacing-0";
+  const commonCellClasses = "py-2 font-medium";
 
   return (
-    <div>
-      <div className="overflow-x-auto">
-        <table className="w-full">
-          <thead>
-            <tr className="text-left">
-              <th className="pb-2 pl-16">Expenses</th>
-              <th className="pb-2">Amount</th>
-              <th className="pb-2">Date</th>
-              <th className="pb-2">Budget Category</th>
-            </tr>
-          </thead>
-          <tbody className="overflow-y-auto max-h-96">
-            {expenses.map((expense, index) => {
-              // Find the budget category for the expense based on categoryId
-              const budget = budgets.find(
-                (budget) => budget.id === expense.categoryId
-              );
+    <div className="relative">
+      {/* Fixed header */}
+      <table className={tableClasses}>
+        <colgroup>
+          <col className="w-[25%]" />
+          <col className="w-[20%]" />
+          <col className="w-[20%]" />
+          <col className="w-[35%]" />
+        </colgroup>
+        <thead className="bg-white">
+          <tr>
+            <th className={`${commonCellClasses} text-left pl-16`}>Expenses</th>
+            <th className={`${commonCellClasses} text-right pr-16`}>Amount</th>
+            <th className={`${commonCellClasses} text-right pr-16`}>Date</th>
+            <th className={`${commonCellClasses} text-left pl-4`}>
+              Budget Category
+            </th>
+          </tr>
+        </thead>
+      </table>
 
-              return (
-                <tr
-                  key={expense.id} // Using expense ID as key
-                  className={index % 2 === 1 ? "bg-blue-600 text-white" : ""}
-                >
-                  <td className="py-2 pl-10 font-medium">{expense.expense_name}</td>
-                  <td className="py-2 font-medium">₱{expense.amount.toFixed(2)}</td>
-                  <td className="py-2 font-medium">
-                    {new Date(expense.createdAt).toLocaleDateString()}
-                  </td>
-                  <td className="py-2">
-                    <span
-                      className={`px-3 py-1 rounded-full ${
-                        index % 2 === 1
-                          ? "bg-white text-blue-600"
-                          : "bg-blue-100 text-blue-600"
-                      }`}
-                    >
-                      {budget?.budget_name || "No Category"}
-                    </span>
-                  </td>
-                </tr>
-              );
-            })}
+      {/* Scrollable body */}
+      <div className="overflow-y-auto" style={{ height: "300px" }}>
+        <table className={tableClasses}>
+          <colgroup>
+            <col className="w-[25%]" />
+            <col className="w-[20%]" />
+            <col className="w-[20%]" />
+            <col className="w-[35%]" />
+          </colgroup>
+          <tbody>
+            {filteredExpenses.length === 0 ? (
+              <tr>
+                <td colSpan="4" className="text-center py-4">
+                  No expenses found
+                </td>
+              </tr>
+            ) : (
+              filteredExpenses.map((expense, index) => {
+                const budget = budgets.find(
+                  (budget) => budget.id === expense.categoryId
+                );
+
+                return (
+                  <tr
+                    key={expense.id}
+                    onClick={
+                      location.pathname === "/expenses"
+                        ? () => openEditModal(expense)
+                        : null
+                    }
+                    className={`cursor-pointer hover:opacity-80 ${
+                      index % 2 === 1 ? "bg-blue-600 text-white" : ""
+                    }`}
+                  >
+                    <td className={`${commonCellClasses} pl-16`}>
+                      {expense.expense_name}
+                    </td>
+                    <td className={`${commonCellClasses} text-right pr-16`}>
+                      ₱{expense.amount.toFixed(2)}
+                    </td>
+                    <td className={`${commonCellClasses} text-right pr-16`}>
+                      {new Date(expense.createdAt).toLocaleDateString()}
+                    </td>
+                    <td className={`${commonCellClasses} pl-4`}>
+                      <div className="flex justify-between items-center">
+                        <span
+                          className={`px-3 py-1 rounded-full ${
+                            index % 2 === 1
+                              ? "bg-white text-blue-600"
+                              : "bg-blue-100 text-blue-600"
+                          }`}
+                        >
+                          {budget?.budget_name || "No Category"}
+                        </span>
+                        {location.pathname === "/expenses" && (
+                          <button
+                            className="bg-red-500 p-1.5 rounded-lg hover:bg-red-600 transition-colors mr-4"
+                            onClick={(e) => openDeleteModal(e, expense)}
+                          >
+                            <Trash2 size={16} className="text-white" />
+                          </button>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })
+            )}
           </tbody>
         </table>
       </div>
+
+      {/* Modals */}
+      {isModalOpen && (
+        <EditExpenseModal
+          expense={selectedExpense}
+          budgets={budgets}
+          onClose={closeModal}
+          onSave={handleSave}
+        />
+      )}
+
+      {isDeleteModalOpen && expenseToDelete && (
+        <DeleteExpenseModal
+          expense={expenseToDelete}
+          onDelete={handleDelete}
+          onClose={closeDeleteModal}
+        />
+      )}
     </div>
   );
 };

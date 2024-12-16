@@ -6,10 +6,10 @@ const useAuthStore = create((set) => ({
   user: (() => {
     try {
       const user = localStorage.getItem("user");
-      return user ? JSON.parse(user) : null; // Return null if user doesn't exist or is invalid
+      return user ? JSON.parse(user) : null;
     } catch (error) {
       console.error("Error parsing user from localStorage:", error);
-      return null; // Fallback to null if JSON parsing fails
+      return null;
     }
   })(),
 
@@ -17,7 +17,7 @@ const useAuthStore = create((set) => ({
     try {
       localStorage.setItem("token", token);
       if (user) {
-        localStorage.setItem("user", JSON.stringify(user)); // Store user as a JSON string
+        localStorage.setItem("user", JSON.stringify(user));
       }
       set({
         isAuthenticated: !!token,
@@ -32,16 +32,16 @@ const useAuthStore = create((set) => ({
   updateUserProfile: (updatedUser) =>
     set((state) => {
       try {
-        const updatedUserData = { ...state.user, ...updatedUser }; // Merge the updated user data
+        const updatedUserData = { ...state.user, ...updatedUser };
         if (updatedUserData) {
-          localStorage.setItem("user", JSON.stringify(updatedUserData)); // Persist updated user
+          localStorage.setItem("user", JSON.stringify(updatedUserData));
         }
         return {
           user: updatedUserData,
         };
       } catch (error) {
         console.error("Error updating user profile:", error);
-        return state; // Return previous state in case of error
+        return state;
       }
     }),
 
