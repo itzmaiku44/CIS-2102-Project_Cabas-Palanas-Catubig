@@ -65,9 +65,11 @@ const Budgets = () => {
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);
   };
-
   const handleDelete = (budget) => {
-    setBudgets(budgets.filter((b) => b.id !== budget.id));
+    setBudgets((prevBudgets) => prevBudgets.filter((b) => b.id !== budget.id));
+    setFilteredBudgets((prevFilteredBudgets) =>
+      prevFilteredBudgets.filter((b) => b.id !== budget.id)
+    );
   };
 
   const handleSave = (updatedBudget) => {

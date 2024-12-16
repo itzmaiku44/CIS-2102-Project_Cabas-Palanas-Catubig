@@ -110,3 +110,41 @@ export const updateBudget = async (id, budget) => {
     throw err;
   }
 };
+
+// Delete an expense
+export const deleteBudget = async (id) => {
+  try {
+    const { token } = useAuthStore.getState();
+    if (!token) {
+      throw new Error("No authentication token found");
+    }
+
+    // Log the request details for debugging
+    console.log("Delete budget request:", {
+      id,
+      url: `${API_URL}/budgets/${id}`,
+    });
+
+    const response = await fetch(`${API_URL}/budgets/${id}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    // Log the response for debugging
+    console.log("Delete response status:", response.status);
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || "Failed to delete budget");
+    }
+
+    // Assuming the API returns the deleted expense or a success message
+    return await response.json();
+  } catch (err) {
+    console.error("Delete expense error:", err.message);
+    throw err;
+  }
+};

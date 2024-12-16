@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Trash2 } from "lucide-react";
+import { deleteBudget } from "../../../store/budgetApi";
 import EditBudgetModal from "../../Modals/EditBudgetModal";
 import DeleteBudgetModal from "../../Modals/DeleteBudgetModal";
 
@@ -47,10 +48,18 @@ const BudgetTable = ({ budgets, searchTerm, onDelete, onSave }) => {
     setIsDeleteModalOpen(false);
     setBudgetToDelete(null);
   };
-
-  const handleDelete = (budget) => {
-    onDelete(budget);
-    closeDeleteModal();
+  const handleDelete = async (budget) => {
+    console.log("inside budget table: ", budget);
+    try {
+      await deleteBudget(budget.id);
+      setFilteredBudgets((prevBudgets) =>
+        prevBudgets.filter((bud) => bud.id !== budget.id)
+      );
+      onDelete(budget);
+      closeDeleteModal();
+    } catch (err) {
+      setError("Failed to delete budget");
+    }
   };
 
   return (
