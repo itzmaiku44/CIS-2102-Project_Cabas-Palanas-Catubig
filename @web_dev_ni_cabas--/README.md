@@ -32,6 +32,7 @@ npm run dev
 
 </br>
 </br>
+
 # INSTALLATION
 
 ### Tailwind CSS
