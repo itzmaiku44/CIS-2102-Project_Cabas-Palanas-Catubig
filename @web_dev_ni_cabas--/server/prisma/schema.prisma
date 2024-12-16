@@ -29,7 +29,7 @@ model Expenses {
   categoryId  Int
   createdAt   DateTime @default(now())
   user        User     @relation(fields: [userId], references: [id])
-  category    Budget   @relation(fields: [categoryId], references: [id])
+  category    Budget   @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 }
 
 model Budget {
@@ -41,5 +41,3 @@ model Budget {
   user      User     @relation(fields: [userId], references: [id])
   expenses Expenses[]
 }
-
-
