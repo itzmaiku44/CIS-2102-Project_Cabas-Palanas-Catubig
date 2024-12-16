@@ -5,7 +5,13 @@ import { useLocation } from "react-router-dom";
 import EditExpenseModal from "../../Modals/EditExpensesModal";
 import DeleteExpenseModal from "../../Modals/DeleteExpenseModal";
 
-const ExpensesTable = ({ expenses, budgets, searchTerm }) => {
+const ExpensesTable = ({
+  expenses,
+  budgets,
+  searchTerm,
+  onDeleteExpense,
+  onSave,
+}) => {
   const [filteredExpenses, setFilteredExpenses] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -42,12 +48,8 @@ const ExpensesTable = ({ expenses, budgets, searchTerm }) => {
     setSelectedExpense(null);
   };
 
-  const handleSave = (updatedExpense) => {
-    setFilteredExpenses((prevExpenses) =>
-      prevExpenses.map((expense) =>
-        expense.id === updatedExpense.id ? updatedExpense : expense
-      )
-    );
+  const handleSave = (updatedBudget) => {
+    onSave(updatedBudget);
     closeModal();
   };
 
@@ -68,6 +70,7 @@ const ExpensesTable = ({ expenses, budgets, searchTerm }) => {
       setFilteredExpenses((prevExpenses) =>
         prevExpenses.filter((exp) => exp.id !== expense.id)
       );
+      onDeleteExpense(expense.id);
       closeDeleteModal();
     } catch (err) {
       setError("Failed to delete expense");

@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { Pie } from "react-chartjs-2";
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import Sidebar from "../Sidebar";
 import ExpensesTable from "./ExpensesTable";
 import AddExpenseModal from "../../Modals/AddExpensesModal";
+import PieChart from "./ExpensesChart";
 import { Search } from "lucide-react";
 import { fetchExpenses } from "../../../store/expensesApi";
 import { fetchBudgets } from "../../../store/budgetApi";
 
-// Register ChartJS components
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 const Expenses = () => {
@@ -18,16 +17,42 @@ const Expenses = () => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [expensesByCategory, setExpensesByCategory] = useState({});
-  
-  // Currency configuration
-  const currency = { symbol: '₱' };
 
-  // Colors for the pie chart
-  const chartColors = [
-    '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF',
-    '#FF9F40', '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0'
-  ];
+  const currency = { symbol: "₱" };
+  const baseColors = ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0", "#9966FF"];
 
+  const shuffleArray = (array) => {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+  };
+
+  const shuffledColors = shuffleArray(baseColors);
+
+  const getChartColors = (categoryCount) => {
+    const repeatedColors = [];
+    while (repeatedColors.length < categoryCount) {
+      repeatedColors.push(...shuffledColors);
+    }
+    return repeatedColors.slice(0, categoryCount);
+  };
+
+  // Move calculateExpensesByCategory outside useEffect so we can reuse it
+  const calculateExpensesByCategory = (expensesData, budgetData) => {
+    const categoryTotals = {};
+    expensesData.forEach((expense) => {
+      const budget = budgetData.find((b) => b.id === expense.categoryId);
+      const categoryName = budget ? budget.budget_name : "Uncategorized";
+      categoryTotals[categoryName] =
+        (categoryTotals[categoryName] || 0) + expense.amount;
+    });
+    return categoryTotals;
+  };
+
+  // Effect to load initial data
   useEffect(() => {
     const loadExpensesAndBudgets = async () => {
       try {
@@ -36,7 +61,11 @@ const Expenses = () => {
         setExpenses(expensesData);
         setBudgets(budgetData);
         setFilteredExpenses(expensesData);
-        calculateExpensesByCategory(expensesData, budgetData);
+        const categoryTotals = calculateExpensesByCategory(
+          expensesData,
+          budgetData
+        );
+        setExpensesByCategory(categoryTotals);
       } catch (err) {
         console.error("Error loading data:", err.message);
       }
@@ -45,100 +74,71 @@ const Expenses = () => {
     loadExpensesAndBudgets();
   }, []);
 
-  // Calculate expenses by category
-  const calculateExpensesByCategory = (expensesData, budgetData) => {
-    const categoryTotals = {};
-    
-    expensesData.forEach(expense => {
-      const budget = budgetData.find(b => b.id === expense.categoryId);
-      const categoryName = budget ? budget.budget_name : 'Uncategorized';
-      
-      if (categoryTotals[categoryName]) {
-        categoryTotals[categoryName] += expense.amount;
-      } else {
-        categoryTotals[categoryName] = expense.amount;
-      }
-    });
+  // Effect to update chart when expenses change
+  useEffect(() => {
+    const categoryTotals = calculateExpensesByCategory(expenses, budgets);
+    setExpensesByCategory(categoryTotals);
+  }, [expenses, budgets]);
 
+  const handleOpenAddModal = () => setIsAddModalOpen(true);
+  const handleCloseAddModal = () => setIsAddModalOpen(false);
+
+  const handleAddExpense = (newExpense) => {
+    setExpenses((prevExpenses) => [...prevExpenses, newExpense]);
+    setFilteredExpenses((prevExpenses) => [...prevExpenses, newExpense]);
+  };
+
+  const handleDeleteExpense = (deletedExpenseId) => {
+    setExpenses((prevExpenses) =>
+      prevExpenses.filter((exp) => exp.id !== deletedExpenseId)
+    );
+    setFilteredExpenses((prevExpenses) =>
+      prevExpenses.filter((exp) => exp.id !== deletedExpenseId)
+    );
+  };
+
+  const handleSave = (updatedExpense) => {
+    // Update the expense in the local state
+    setExpenses((prevExpenses) =>
+      prevExpenses.map((expense) =>
+        expense.id === updatedExpense.id ? updatedExpense : expense
+      )
+    );
+    setFilteredExpenses((prevExpenses) =>
+      prevExpenses.map((expense) =>
+        expense.id === updatedExpense.id ? updatedExpense : expense
+      )
+    );
+
+    // Recalculate the expenses by category
+    const categoryTotals = calculateExpensesByCategory(expenses, budgets);
     setExpensesByCategory(categoryTotals);
   };
 
-  // Prepare chart data
+  const handleSearch = (e) => setSearchTerm(e.target.value);
+
   const chartData = {
     labels: Object.keys(expensesByCategory),
-    datasets: [{
-      data: Object.values(expensesByCategory),
-      backgroundColor: chartColors.slice(0, Object.keys(expensesByCategory).length),
-      borderWidth: 1
-    }]
-  };
-
-  const handleOpenAddModal = () => {
-    setIsAddModalOpen(true);
-  };
-
-  const handleCloseAddModal = () => {
-    setIsAddModalOpen(false);
-  };
-
-  const handleAddExpense = (newExpense) => {
-    setExpenses((prevExpenses) => {
-      const updatedExpenses = [...prevExpenses, newExpense];
-      setFilteredExpenses(updatedExpenses);
-      return updatedExpenses;
-    });
-    setIsAddModalOpen(false);
-  };
-
-  const handleSearch = (e) => {
-    setSearchTerm(e.target.value);
+    datasets: [
+      {
+        data: Object.values(expensesByCategory),
+        backgroundColor: getChartColors(Object.keys(expensesByCategory).length),
+        borderWidth: 1,
+      },
+    ],
   };
 
   return (
     <div className="flex h-screen bg-gray-100 overflow-hidden">
       <Sidebar />
       <div className="w-full p-12 flex flex-col h-screen overflow-y-auto">
-        {/* Pie Chart Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-          <div className="bg-white p-6 rounded-lg shadow">
-            <h2 className="text-2xl font-bold mb-4">Expenses by Category</h2>
-            <div className="w-full h-[300px] flex items-center justify-center">
-              <Pie 
-                data={chartData}
-                options={{
-                  responsive: true,
-                  maintainAspectRatio: false,
-                  plugins: {
-                    legend: {
-                      position: 'right',
-                    },
-                  },
-                }}
-              />
-            </div>
-          </div>
+        <PieChart
+          chartData={chartData}
+          expensesByCategory={expensesByCategory}
+          chartColors={getChartColors(Object.keys(expensesByCategory).length)}
+          currency={currency}
+        />
 
-          {/* Category Legend */}
-          <div className="bg-white p-6 rounded-lg shadow">
-            <h2 className="text-2xl font-bold mb-4">Total Spent</h2>
-            <div className="grid grid-cols-2 gap-4">
-              {Object.entries(expensesByCategory).map(([category, total], index) => (
-                <div key={category} className="flex items-center space-x-2">
-                  <div 
-                    className="w-4 h-4 rounded-full" 
-                    style={{ backgroundColor: chartColors[index] }} 
-                  />
-                  <span>{category}</span>
-                  <span className="font-bold">
-                    {currency.symbol}{total.toLocaleString()}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Expense Table Section */}
         <section className="w-full flex-1 min-h-0">
           <div>
             <div className="flex items-center justify-between mb-4">
@@ -170,11 +170,12 @@ const Expenses = () => {
               expenses={filteredExpenses}
               budgets={budgets}
               searchTerm={searchTerm}
+              onDeleteExpense={handleDeleteExpense}
+              onSave={handleSave}
             />
           </div>
         </section>
 
-        {/* Add Expense Modal */}
         {isAddModalOpen && (
           <AddExpenseModal
             onClose={handleCloseAddModal}
