@@ -53,10 +53,14 @@ const Expenses = () => {
   const handleAddExpense = (newExpense) => {
     setExpenses((prevExpenses) => {
       const updatedExpenses = [...prevExpenses, newExpense];
-      setFilteredExpenses(updatedExpenses); // Update filteredExpenses here
+      setFilteredExpenses(updatedExpenses);
       return updatedExpenses;
     });
-    setIsAddModalOpen(false); // Close modal after adding
+    setIsAddModalOpen(false);
+  };
+
+  const handleSearch = (e) => {
+    setSearchTerm(e.target.value);
   };
 
   return (
@@ -67,11 +71,9 @@ const Expenses = () => {
         {/* Expense Table Section */}
         <section className="w-full flex-1 min-h-0">
           <div>
-            {/* Flex container for Expenses Title and Add Button */}
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
                 <h2 className="text-xl font-bold">Expenses</h2>
-                {/* Add Button with Plus sign in a green circle */}
                 <button
                   onClick={handleOpenAddModal}
                   className="flex items-center justify-center bg-green-500 text-white w-6 h-6 rounded-full hover:bg-green-600 transition duration-200 leading-none"
@@ -80,7 +82,6 @@ const Expenses = () => {
                 </button>
               </div>
 
-              {/* Flex container for Search Input */}
               <div className="relative flex items-center">
                 <Search size={20} className="absolute left-3 text-gray-400" />
                 <input
